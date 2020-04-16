@@ -1,0 +1,74 @@
+{% extends  'base.html' %}
+
+{% block style %}
+<style media="screen">
+   input[type = text], input[type = password], input[type = email]{
+     width: 100%
+   }
+   .block{position:relative;}
+    /* Оформление скрытого элемента по умолчанию */
+   .hidden
+    {display: none;
+    position: absolute;
+    z-index:99999999;
+    top: 90%;
+    left: 15%;
+    border: 2px solid #08f;
+    background-color: #fff;
+    color: #000;
+    padding: 5px;
+    text-align: left;
+    -moz-box-shadow: 0 1px 1px rgba(0,0,0,.16);
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.16);
+    box-shadow: 0 1px 1px rgba(0,0,0,.16);
+    font-size: 12px;}
+    /* Появление скрытого элемента при наведении */
+    .hover:hover + .hidden{display: block;}
+</style>
+{% endblock %}
+
+{% block title %} Регистрация {% endblock %}
+
+{% block main %}
+{% include 'menu.html' %}
+<div  class="container-fluid">
+    <div  class="row justify-content-center" style="margin:10px">
+<div class="col-12 col-sm-12 col-md-7 col-lg-5 col-xl-3">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Регистрация</h4>
+      <form method="POST" action="{% url 'registration:register' %}">
+        {% csrf_token %}
+        <!-- <input type="hidden" name="next" value="{{ next }}"> -->
+        <table class="w-100">
+          {% for field in form %}
+            <tr>
+              <td height="40" width="35%">{{ field.label_tag }}</td>
+              <td height="40">
+                <div class="block">
+                  <div class="hover">{{ field }}</div>
+                  {% if field.help_text %}
+                    <span class="hidden">
+                      {{ field.help_text|linebreaks }}
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <small class="text-danger">{{ field.errors }}</small>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+        <button type="submit" class="btn btn-primary btn-block" name='register'>Зарегистрироваться</button>
+      </form>
+      <hr>
+      <a href="{% url 'registration:login' %}" class="btn btn-primary btn-sm btn-block">Войти</a>
+      <a href="{% url 'registration:index' %}" class="btn btn-primary btn-sm btn-block">На главную</a>
+    </div>
+  </div>
+</div>  </div>
+</div>
+{% endblock %}

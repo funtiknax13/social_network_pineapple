@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %} Диалоги {% endblock %}
+{% block style %} <style media="screen">
+    img {
+     -webkit-border-radius: 50%;
+     -moz-border-radius: 50%;
+     -ms-border-radius: 50%;
+     -o-border-radius: 50%;
+     border-radius: 50%;
+     }
+</style>
+{% endblock %}
+{% block main %}
+{% include 'menu.html' %}
+<div class="container-fluid">
+ <div class="row justify-content-center">
+   <div class="main col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6 ">
+     {% for message in messages %}
+         {% if message.sender == request.user %}
+           <div class="media bg-secondary mt-3 p-2 rounded">
+             <a href="{% url 'dialogs:dialog' message.reciever.username %}"><img class="d-flex mr-3" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" ></a>
+             <div class="media-body wordwrap textowerflow">
+               <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.reciever.username %}" class="text-dark"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong></a>
+                 <time class="float-right">{{message.message_time}}</time></h5>
+               {{message.message_text|linebreaks}}
+             </div>
+           </div>
+         {% else %}
+          {% if not message.is_readed %}
+            <div class="media bg-info mt-3 p-2 rounded">
+              <a href="{% url 'dialogs:dialog' message.sender.username %}"><img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" ></a>
+              <div class="media-body wordwrap textowerflow">
+                <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.sender.username %}" class="text-dark">{{ message.sender.first_name }} {{message.sender.last_name}}</a>
+                  <time class="float-right">{{message.message_time}}</time></h5>
+                  {{message.message_text|linebreaks}}
+              </div>
+            </div>
+          {% else %}
+            <div class="media bg-secondary mt-3 p-2 rounded">
+              <a href="{% url 'dialogs:dialog' message.sender.username %}"><img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" ></a>
+              <div class="media-body wordwrap textowerflow">
+                <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.sender.username %}" class="text-dark">{{ message.sender.first_name }} {{message.sender.last_name}}</a>
+                  <time class="float-right">{{message.message_time}}</time></h5>
+                  {{message.message_text|linebreaks}}
+              </div>
+            </div>
+          {% endif %}
+         {% endif %}
+       {% endfor %}
+     </div>
+   </div>
+ </div>
+{% endblock %}

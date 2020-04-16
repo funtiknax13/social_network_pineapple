@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
+
+{% block main %}
+{% include 'menu.html' %}
+<div class="container-fluid text-center">
+  <div class="row content">
+
+    <div class="col-sm-2 sidenav">
+      <div class="category-wrap">
+        <ul>
+          <li class="active"><a href="{% url 'account:find_users' %}">Найти друга</a></li>
+          <li><a href="{% url 'account:friends' %}">Друзья</a></li>
+          <li><a href="{% url 'account:friend_request' %}">Заявки в друзья </a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-sm-8 text-left">
+      <form action="{% url 'account:find_users' %}" method="post" enctype="multipart/form-data" class="form-inline mt-3 mb-2">
+        {% csrf_token %}
+        <label class="sr-only" for="id_search">Поиск:</label>
+        <input type="text" class="form-control w-75" name="search" maxlength="60" id="id_search">
+        <button type="submit" name="button" class="btn btn-primary w-25">Найти</button>
+      </form>
+      {% if users %}
+        <div class="card-columns">
+          {% for user in users %}
+            <div class="card">
+              <a href="{% url 'account:account' user.id %}">
+                <img class="img-fluid" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="card-img-top">
+              </a>
+              <div class="card-body">
+                <h4 class="card-title">
+                  <a href="{% url 'account:account' user.id %}">{{user.first_name}} {{user.last_name}}</a>
+                </h4>
+                <p class="card-text">
+                  {% if user.profile.birth_date %}
+                    {{ user.profile.birth_date }}
+                  <br>
+                  {% endif %}
+                  {% if user.profile.city %}
+                    {{ user.profile.city}}
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>По вашему запросу пользователей не найдено =(</p>
+      {% endif %}
+    </div>
+
+    <div class="col-sm-2 sidenav">
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
+{% block style %}
+<style media="screen">
+  input[type = text]{
+    display:block;
+    width:100%;
+    height:calc(1.5em + .75rem + 2px);
+    padding:.375rem .75rem;
+    font-size:1rem;
+    font-weight:400;
+    line-height:1.5;
+    color:#495057;
+    background-color:#fff;
+    background-clip:padding-box;
+    border:1px solid #ced4da;
+    border-radius:.25rem;
+    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
+  }
+  textarea{
+    display:block;
+    width:100%;
+    height:calc(1.5em + .75rem + 2px);
+    padding:.375rem .75rem;
+    font-size:1rem;
+    font-weight:400;
+    height:80px;
+    color:#495057;
+    background-color:#fff;
+    background-clip:padding-box;
+    border:1px solid #ced4da;
+    border-radius:.25rem;
+    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
+  }
+   input[type = file]{
+     display:block;
+     width:100%
+   }
+   @media (min-width: 576px) {
+    .card-columns {
+        column-count: 1;
+   }
+   }
+    @media (min-width: 768px) {
+        .card-columns {
+            column-count: 1;
+       }
+   }
+    @media (min-width: 992px) {
+        .card-columns {
+            column-count: 2;
+       }
+   }
+    @media (min-width: 1200px) {
+        .card-columns {
+            column-count: 2;
+       }
+   }
+</style>
+{% endblock %}
+
+{% block main %}
+  {% include 'menu.html' %}
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <h3>{{user.first_name}} {{user.last_name}}</h3>
+        {% if user.profile.avatar %}
+          <p><a href="{% url 'account:account_setting' %}" title="Изменить"><img class="img-thumbnail" src="{{ user.profile.avatar.url }}" width="100%" alt="{{ user.username }}" ></a></p>
+        {% endif %}
+        <p>
+          {% if user.profile.birth_date %}
+            {{ user.profile.birth_date }}
+          <br>
+          {% endif %}
+          {% if user.profile.city %}
+            {{ user.profile.city}}
+          {% endif %}
+        </p>
+        <div class="category-wrap">
+          <ul>
+            <li><a href="{% url 'account:account_setting' %}">Настроить</a></li>
+            <li><a href="#" id="modalwin">Создать пост</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Ваш пост</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url 'account:user_account' %}" method="post" enctype="multipart/form-data" class="text-left">
+                {% csrf_token %}
+                {% for field in form %}
+                 <div class="form-group">
+                  {{ field.label_tag}} {{field}}
+                 </div>
+                {% endfor %}
+               <input type="submit" name="action" value="Создать" class="btn btn-block btn-primary">
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        $('#modalwin').on('click', function(e) {
+          e.preventDefault();
+          $("#exampleModal").modal('show');
+        });
+      </script>
+
+      <div class="col-sm-8 text-left">
+        <div class="card-columns">
+        {% for post in user_posts %}
+          <div class="card mb-2 mt-2 text-white bg-dark">
+            {% if post.post_image %}
+              <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+            {% endif %}
+              <div class="card-body">
+              {% if post.post_title %}
+                <h4 class="card-title">{{ post.post_title }}</h4>
+              {% endif %}
+              <p class="card-text">
+                {{ post.post_text|linebreaks }}
+              </p>
+              <p>
+              <strong><time>{{ post.post_time }}</time></strong>
+              <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
+                <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="like" width="20px">
+                <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
+              </a>
+              <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
+                <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
+              </a>
+              </p>
+            </div>
+          </div>
+          <script type="text/javascript">
+            $.ajax({
+                url: "{% url 'posts:user_like' post.id %}",
+                type: 'GET',
+                data: {'check': true},
+
+                success: function (json) {
+                    if (json.result) {
+                      var like = json.like;
+                      var dislike = json.dislike;
+                      if (json.user_like) {
+                        if (json.user_like_val == "like"){
+                          $('#like_val{{ post.id }}').text(like);
+                          $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                          $('#dislike_val{{ post.id }}').text(dislike);
+                        } else {
+                          $('#like_val{{ post.id }}').text(like);
+                          $('#dislike_val{{ post.id }}').text(dislike);
+                          $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                        }
+                      } else {
+                        $('#like_val{{ post.id }}').text(like);
+                        $('#dislike_val{{ post.id }}').text(dislike);
+                      }
+                    }
+                }
+            });
+
+              $('#like_block{{ post.id }}').on('click', function(e) {
+                e.preventDefault();
+               $.ajax({
+                  type:'GET',
+                  url:"{% url 'posts:like_or_dislike' post.id 'like' %}",
+                  data: {'check': true},
+                  success:function (json) {
+                      if (json.result) {
+                          var like = json.like;
+                          var dislike = json.dislike;
+                          if (json.user_like) {
+                            $('#like_val{{ post.id }}').text(like);
+                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                            $('#dislike_val{{ post.id }}').text(dislike);
+                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                          } else {
+                            $('#like_val{{ post.id }}').text(like);
+                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                            $('#dislike_val{{ post.id }}').text(dislike);
+                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                          }
+                    }
+                  }
+                });
+              });
+
+              $('#dislike_block{{ post.id }}').on('click', function(e) {
+                e.preventDefault();
+               $.ajax({
+                  type:'GET',
+                  url:"{% url 'posts:like_or_dislike' post.id 'dislike' %}",
+                  data: {'check': true},
+                  success:function (json) {
+                      if (json.result) {
+                          var like = json.like;
+                          var dislike = json.dislike;
+                          if (json.user_like) {
+                              $('#like_val{{ post.id }}').text(like);
+                              $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                              $('#dislike_val{{ post.id }}').text(dislike);
+                              $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                            } else {
+                            $('#like_val{{ post.id }}').text(like);
+                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                            $('#dislike_val{{ post.id }}').text(dislike);
+                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                          }
+
+                    }
+                  }
+                });
+              });
+            </script>
+        {% endfor %}
+        </div>
+        <nav aria-label="post-pagination">
+          <ul class="pagination pagination-lg justify-content-center">
+            {% if posts.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ posts.previous_page_number }}">Назад</a>
+              </li>
+            {% endif %}
+            {% if posts.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ posts.next_page_number }}">Предыдущие</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      <div class="col-sm-2 sidenav">
+
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

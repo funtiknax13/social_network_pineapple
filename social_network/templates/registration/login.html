@@ -1,0 +1,50 @@
+{% extends  'base.html' %}
+
+{% block style %}
+<style media="screen">
+   input[type = text], input[type = password]{
+     width: 100%
+   }
+</style>
+{% endblock %}
+
+{% block title %} Войти {% endblock %}
+
+{% block main %}
+{% include 'menu.html' %}
+<div  class="container-fluid">
+    <div  class="row justify-content-center" style="margin:10px">
+      <div class="col-12 col-sm-12 col-md-7 col-lg-5 col-xl-3">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Войдите в свой аккаунт</h4>
+            <form method="post">
+              {% csrf_token %}
+              <!-- <input type="hidden" name="next" value="{{ next }}"> -->
+              <table class="w-100">
+                {% for field in form %}
+                  <tr>
+                    <td height="40" width="35%">{{ field.label_tag }}</td>
+                    <td height="40">{{ field }}</td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                  <td colspan="2">
+                    {% if form.errors %}
+                      <small class="text-danger">{{ form.non_field_errors }}</small>
+                    {% endif %}
+                  </td>
+                </tr>
+              </table>
+              <br>
+              <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            </form>
+            <hr>
+            <a href="{% url 'registration:register' %}" class="btn btn-primary btn-sm btn-block">Зарегистрироваться</a>
+            <a href="{% url 'registration:index' %}" class="btn btn-primary btn-sm btn-block">На главную</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

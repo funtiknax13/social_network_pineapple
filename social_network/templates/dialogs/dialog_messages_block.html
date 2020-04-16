@@ -1,0 +1,19 @@
+    {% for message in messages %}
+      {% if message.sender == user %}
+        <div class="media w-75 bg-secondary mb-3 p-1 rounded">
+          <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}">
+          <div class="media-body wordwrap textowerflow">
+            <h6 class="mt-0">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+            {{message.message_text|linebreaks}}
+          </div>
+        </div>
+      {% else %}
+        <div class="media w-75 float-right bg-success mb-3 mr-1 p-1 rounded">
+          <div class="media-body wordwrap textowerflow">
+            <h6 class="mt-0 mb-1">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+            {{message.message_text|linebreaks}}
+          </div>
+          <img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}">
+        </div>
+      {% endif %}
+    {% endfor %}

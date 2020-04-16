@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %} Настройки аккаунта {% endblock %}
+
+{% block style %}
+<style media="screen">
+  input[type = text], input[type = password], input[type = email], select{
+    display:block;
+    width:100%;
+    height:calc(1.5em + .75rem + 2px);
+    padding:.375rem .75rem;
+    font-size:1rem;
+    font-weight:400;
+    line-height:1.5;
+    color:#495057;
+    background-color:#fff;
+    background-clip:padding-box;
+    border:1px solid #ced4da;
+    border-radius:.25rem;
+    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
+  }
+   input[type = file]{
+     display:block;
+     width:100%
+   }
+</style>
+{% endblock %}
+
+{% block main %}
+{% include 'menu.html' %}
+<div class="container-fluid">
+ <div class="row justify-content-center">
+   <div class="main col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6 ">
+     <form action="{% url 'account:account_setting' %}" method="post" enctype="multipart/form-data" class="mt-3 ml-3">
+       {% csrf_token %}
+       <div class="form-group">
+         <label for="id_first_name">Имя:</label>
+         <input type="text" name="first_name" maxlength="25" id="id_first_name" value="{{request.user.first_name}}">
+       </div>
+       <div class="form-group">
+         <label for="id_last_name">Фамилия:</label>
+         <input type="text" name="last_name" maxlength="25" id="id_last_name" value="{{request.user.last_name}}">
+       </div>
+       {% for field in form %}
+        <div class="form-group">
+         {{ field.label_tag}} {{field}}
+        </div>
+       {% endfor %}
+       <button type="submit" name="button" class="btn btn-block btn-primary">Сохранить</button>
+     </form>
+     <hr>
+     <a href="{% url 'account:user_account' %}" class="btn btn-danger float-right">Отмена</a>
+   </div>
+   </div>
+ </div>
+
+{% endblock %}

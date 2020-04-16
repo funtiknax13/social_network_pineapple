@@ -1,0 +1,80 @@
+{% load static %}
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a href="#" class="btn btn-warning"><h3>AHAHAC</h3></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <a href="{% url 'account:user_account' %}" class="nav-link text-white ">Моя страница</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'account:friends' %}" class="nav-link text-white">Друзья <span class="badge badge-primary" id="new_friends"></span></a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'dialogs:messages' %}" class="nav-link text-white">Сообщения <span class="badge badge-primary" id="messages_count"></span></a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'posts:news' %}" class="nav-link text-white">Новости</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'registration:logout' %}" class="nav-link text-danger">Выйти</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a href="{% url 'registration:login' %}" class="nav-link text-white">Войти</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'registration:register' %}" class="nav-link text-white">Зарегистрироваться</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $.ajax({
+        url: "{% url 'dialogs:new_messages' %}",
+        type: 'GET',
+        data: {'check': true},
+
+        success: function (json) {
+            if (json.result) {
+                var doc = json.messages_count;
+                var new_friends = json.new_friends;
+                if (doc != 0){
+                  $('#messages_count').text(doc);
+                }
+                if (new_friends != 0){
+                  $('#new_friends').text(new_friends);
+                }
+
+            }
+        }
+    });
+
+    setInterval(function new_messages() {
+          $.ajax({
+              url: "{% url 'dialogs:new_messages' %}",
+              type: 'GET',
+              data: {'check': true},
+
+              success: function (json) {
+                  if (json.result) {
+                    var doc = json.messages_count;
+                    var new_friends = json.new_friends;
+                    if (doc != 0){
+                      $('#messages_count').text(doc);
+                    }
+                    if (new_friends != 0){
+                      $('#new_friends').text(new_friends);
+                    }
+                  }
+              }
+          });
+      }, 10000);
+  </script>
