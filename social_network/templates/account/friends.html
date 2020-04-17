@@ -11,7 +11,7 @@
 <div class="container-fluid text-center">
   <div class="row content">
 
-    <div class="col-sm-2 sidenav">
+    <div class="col-md-2 sidenav">
       <div class="category-wrap">
         <ul>
           <li><a href="{% url 'account:find_users' %}">Найти друга</a></li>
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="col-sm-8 text-left">
+    <div class="col-md-8 text-left">
       <strong>Друзья</strong>
       <br>
       <div class="card-columns">
@@ -41,14 +41,14 @@
           <div class="card-body">
             <h4 class="card-title"><a href="{% url 'account:account' friend.user.id %}">
             {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
-            <a class="card-link" href="{% url 'account:delete_friend' friend.user.id %}">Удалить из друзей</a>
+            <a class="btn btn-primary" href="{% url 'account:delete_friend' friend.user.id %}">Удалить из друзей</a>
           </div>
         </div>
       {% endfor %}
       </div>
     </div>
 
-    <div class="col-sm-2 sidenav">
+    <div class="col-md-2 sidenav">
     </div>
 
   </div>

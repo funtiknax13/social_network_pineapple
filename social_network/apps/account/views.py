@@ -44,8 +44,10 @@ def user_account(request):
 #Изменение аватара пользователя
 @login_required(login_url = '/')
 def account_setting(request):
+    user_set = User.objects.get(id = request.user.id)
+    print(user_set.profile.city)
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES)
+        form = ProfileForm(request.POST, request.FILES, instance=user_set.profile)
         if form.is_valid():
             user_setting = request.user
             first_name = request.POST.get('first_name')
@@ -56,12 +58,11 @@ def account_setting(request):
             birth_date = form.cleaned_data['birth_date']
             if avatar:
                 user_setting.profile.avatar = avatar
-            if gender:
-                user_setting.profile.gender = gender
-            if city:
-                user_setting.profile.city = city
-            if birth_date:
-                user_setting.profile.birth_date = birth_date
+            else:
+                user_setting.profile.avatar = 'images/avatar/standart.jpg'
+            user_setting.profile.gender = gender
+            user_setting.profile.city = city
+            user_setting.profile.birth_date = birth_date
             if first_name:
                 user_setting.first_name = first_name
             if last_name:
@@ -69,7 +70,7 @@ def account_setting(request):
             user_setting.save()
             return HttpResponseRedirect(reverse('account:user_account'))
     else:
-        form = ProfileForm()
+        form = ProfileForm(instance=user_set.profile)
     context = {'form': form}
     return render(request, 'account/setting.html', context)
 

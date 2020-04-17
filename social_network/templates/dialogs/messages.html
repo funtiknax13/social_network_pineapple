@@ -9,6 +9,13 @@
      -o-border-radius: 50%;
      border-radius: 50%;
      }
+     a{
+       color:#222;
+     }
+     a:hover {
+       text-decoration: none; /* Добавляем подчеркивание при наведении курсора на ссылку */
+       color: #222; /* Ссылка красного цвета */
+    }
 </style>
 {% endblock %}
 {% block main %}
@@ -18,33 +25,39 @@
    <div class="main col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6 ">
      {% for message in messages %}
          {% if message.sender == request.user %}
+         <a href="{% url 'dialogs:dialog' message.reciever.username %}">
            <div class="media bg-secondary mt-3 p-2 rounded">
-             <a href="{% url 'dialogs:dialog' message.reciever.username %}"><img class="d-flex mr-3" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" ></a>
+             <img class="d-flex mr-3" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
              <div class="media-body wordwrap textowerflow">
-               <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.reciever.username %}" class="text-dark"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong></a>
+               <h5 class="mt-0"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
                  <time class="float-right">{{message.message_time}}</time></h5>
                {{message.message_text|linebreaks}}
              </div>
            </div>
+          </a>
          {% else %}
           {% if not message.is_readed %}
+          <a href="{% url 'dialogs:dialog' message.sender.username %}">
             <div class="media bg-info mt-3 p-2 rounded">
-              <a href="{% url 'dialogs:dialog' message.sender.username %}"><img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" ></a>
+              <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.sender.username %}" class="text-dark">{{ message.sender.first_name }} {{message.sender.last_name}}</a>
+                <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
                   {{message.message_text|linebreaks}}
               </div>
             </div>
+            </a>
           {% else %}
+          <a href="{% url 'dialogs:dialog' message.sender.username %}">
             <div class="media bg-secondary mt-3 p-2 rounded">
-              <a href="{% url 'dialogs:dialog' message.sender.username %}"><img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" ></a>
+              <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0"><a href="{% url 'dialogs:dialog' message.sender.username %}" class="text-dark">{{ message.sender.first_name }} {{message.sender.last_name}}</a>
+                <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
                   {{message.message_text|linebreaks}}
               </div>
             </div>
+          </a>
           {% endif %}
          {% endif %}
        {% endfor %}

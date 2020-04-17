@@ -44,6 +44,7 @@
        {% for field in form %}
         <div class="form-group">
          {{ field.label_tag}} {{field}}
+         <small class="text-danger">{{ field.errors }}</small>
         </div>
        {% endfor %}
        <button type="submit" name="button" class="btn btn-block btn-primary">Сохранить</button>

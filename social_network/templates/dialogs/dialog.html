@@ -28,7 +28,7 @@
        height:100%;
      }
      div .messages{
-       height:750px;
+       height:80vh;
        overflow-y: auto;
      }
 </style>
@@ -45,7 +45,8 @@
           {% for message in sort_messages %}
             {% if message.sender == request.user %}
               <div class="media w-75 bg-secondary mb-3 p-1 rounded">
-                <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}">
+                <a href="{% url 'account:user_account' %}">
+                <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
                 <div class="media-body wordwrap textowerflow">
                   <h6 class="mt-0">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
                   {{message.message_text|linebreaks}}
@@ -57,7 +58,7 @@
                   <h6 class="mt-0 mb-1">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
                   {{message.message_text|linebreaks}}
                 </div>
-                <img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}">
+                <a href="{% url 'account:account' message.sender.id %}"><img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
               </div>
             {% endif %}
           {% endfor %}

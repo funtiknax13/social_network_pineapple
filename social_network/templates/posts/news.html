@@ -30,7 +30,7 @@
   {% include 'menu.html' %}
   <div class="container-fluid text-center">
     <div class="row content">
-      <div class="col-sm-2 sidenav">
+      <div class="col-md-2 sidenav">
         <div class="category-wrap">
           <ul>
             <li class="active"><a href="{% url 'posts:news' %}">Все новости</a></li>
@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <div class="col-sm-8 text-left">
+      <div class="col-md-8 text-left">
         <div class="card-columns p-2">
         {% for post in posts %}
           <div class="card mt-2 text-white bg-dark">
@@ -170,7 +170,7 @@
       </div>
 
 
-      <div class="col-sm-2 sidenav">
+      <div class="col-md-2 sidenav">
 
       </div>
     </div>

@@ -65,7 +65,7 @@
 
   <div class="container-fluid text-center">
     <div class="row content">
-      <div class="col-sm-2 sidenav">
+      <div class="col-md-2 sidenav">
         <h3>{{user.first_name}} {{user.last_name}}</h3>
         {% if user.profile.avatar %}
           <p><a href="{% url 'account:account_setting' %}" title="Изменить"><img class="img-thumbnail" src="{{ user.profile.avatar.url }}" width="100%" alt="{{ user.username }}" ></a></p>
@@ -121,7 +121,7 @@
         });
       </script>
 
-      <div class="col-sm-8 text-left">
+      <div class="col-md-8 text-left">
         <div class="card-columns">
         {% for post in user_posts %}
           <div class="card mb-2 mt-2 text-white bg-dark">
@@ -246,7 +246,7 @@
           </ul>
         </nav>
       </div>
-      <div class="col-sm-2 sidenav">
+      <div class="col-md-2 sidenav">
 
       </div>
     </div>

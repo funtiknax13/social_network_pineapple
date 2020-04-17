@@ -31,7 +31,7 @@
 {% include 'menu.html' %}
 <div class="container-fluid text-center">
   <div class="row content">
-    <div class="col-sm-2 sidenav">
+    <div class="col-md-2 sidenav">
          <h3>{{other_user.first_name}} {{other_user.last_name}}</h3>
        {% if other_user.profile.avatar %}
          <p><img  class="img-thumbnail" src="{{ other_user.profile.avatar.url }}" width="100%" alt="{{ other_user.username }}" ></p>
@@ -54,8 +54,8 @@
          </ul>
        </div>
        </div>
-  
-     <div class="col-sm-8 text-left">
+
+     <div class="col-md-8 text-left">
        <div class="card-columns">
         {% for post in user_posts %}
           <div class="card mb-2 mt-2 text-white bg-dark">
@@ -180,7 +180,7 @@
           </ul>
         </nav>
     </div>
-    <div class="col-sm-2 sidenav">
+    <div class="col-md-2 sidenav">
 
     </div>
   </div>
