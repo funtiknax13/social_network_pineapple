@@ -34,6 +34,7 @@
           <ul>
             <li><a href="{% url 'posts:news' %}">Все новости</a></li>
             <li class="active"><a href="{% url 'posts:like_news' %}">Понравившиеся</a></li>
+            <li><a href="{% url 'posts:friend_news' %}">Новости друзей</a></li>
           </ul>
         </div>
       </div>
@@ -80,12 +81,12 @@
                         if (json.user_like) {
                           if (json.user_like_val == "like"){
                             $('#like_val{{ post.for_post.id }}').text(like);
-                            $('#like_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                            $('#like_block{{ post.for_post.id }}').attr('class', 'btn btn-success float-right ml-2');
                             $('#dislike_val{{ post.for_post.id }}').text(dislike);
                           } else {
                             $('#like_val{{ post.for_post.id }}').text(like);
                             $('#dislike_val{{ post.for_post.id }}').text(dislike);
-                            $('#dislike_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                            $('#dislike_block{{ post.for_post.id }}').attr('class', 'btn btn-danger float-right ml-2');
                           }
                         } else {
                           $('#like_val{{ post.for_post.id }}').text(like);
@@ -107,14 +108,14 @@
                             var dislike = json.dislike;
                             if (json.user_like) {
                               $('#like_val{{ post.for_post.id }}').text(like);
-                              $('#like_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                              $('#like_block{{ post.for_post.id }}').attr('class', 'btn btn-success float-right ml-2');
                               $('#dislike_val{{ post.for_post.id }}').text(dislike);
-                              $('#dislike_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                              $('#dislike_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                             } else {
                               $('#like_val{{ post.for_post.id }}').text(like);
-                              $('#like_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                              $('#like_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                               $('#dislike_val{{ post.for_post.id }}').text(dislike);
-                              $('#dislike_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                              $('#dislike_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                             }
                       }
                     }
@@ -133,14 +134,14 @@
                             var dislike = json.dislike;
                             if (json.user_like) {
                                 $('#like_val{{ post.for_post.id }}').text(like);
-                                $('#like_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                                $('#like_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                                 $('#dislike_val{{ post.for_post.id }}').text(dislike);
-                                $('#dislike_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                                $('#dislike_block{{ post.for_post.id }}').attr('class', 'btn btn-danger float-right ml-2');
                               } else {
                               $('#like_val{{ post.for_post.id }}').text(like);
-                              $('#like_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                              $('#like_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                               $('#dislike_val{{ post.for_post.id }}').text(dislike);
-                              $('#dislike_img{{ post.for_post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                              $('#dislike_block{{ post.for_post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                             }
 
                       }

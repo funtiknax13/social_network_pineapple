@@ -123,6 +123,8 @@ def messages(request):
             else:
                 last_messages_list.append(message)
 
+    users_friends1 = Friend.objects.filter(user = request.user, confirmed = True)
+    users_friends2 = Friend.objects.filter(users_friend = request.user, confirmed = True)
 
-    context = {'users': users, 'messages': last_messages_list}
+    context = {'messages': last_messages_list, 'friends1': users_friends1, 'friends2': users_friends2 }
     return render(request, 'dialogs/messages.html', context)

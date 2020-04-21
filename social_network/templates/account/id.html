@@ -4,25 +4,34 @@
 
 {% block style %}
 <style media="screen">
+  .friend_block{
+    width: 30%;
+    display: inline-block;
+  }
    @media (min-width: 576px) {
     .card-columns {
         column-count: 1;
    }
+   .friend_block{width: 30%;}
    }
     @media (min-width: 768px) {
         .card-columns {
             column-count: 1;
        }
+
+       .friend_block{width: 100%;}
    }
     @media (min-width: 992px) {
         .card-columns {
             column-count: 2;
        }
+       .friend_block{width: 45%;}
    }
     @media (min-width: 1200px) {
         .card-columns {
             column-count: 2;
        }
+       .friend_block{width: 30%;}
    }
 </style>
 {% endblock %}
@@ -52,6 +61,25 @@
             <li><a href="{% url 'account:add_friend' other_user.id %}">Добавить в друзья</a></li>
            {% endif %}
          </ul>
+       </div>
+       <div class="category-wrap">
+         <h6>Друзья</h6>
+         <div>
+           {% for friend in friends1 %}
+             <div class="friend_block">
+               <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="rounded-circle w-100"></a>
+                 <h4 class="card-title"><a href="{% url 'account:account' friend.users_friend.id %}">
+                 {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
+             </div>
+           {% endfor %}
+           {% for friend in friends2 %}
+             <div class="friend_block">
+               <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="rounded-circle w-100"></a>
+                 <h4 class="card-title"><a href="{% url 'account:account' friend.user.id %}">
+                 {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
+             </div>
+           {% endfor %}
+         </div>
        </div>
        </div>
 
@@ -95,12 +123,12 @@
                       if (json.user_like) {
                         if (json.user_like_val == "like"){
                           $('#like_val{{ post.id }}').text(like);
-                          $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                          $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
                           $('#dislike_val{{ post.id }}').text(dislike);
                         } else {
                           $('#like_val{{ post.id }}').text(like);
                           $('#dislike_val{{ post.id }}').text(dislike);
-                          $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                          $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
                         }
                       } else {
                         $('#like_val{{ post.id }}').text(like);
@@ -122,14 +150,14 @@
                           var dislike = json.dislike;
                           if (json.user_like) {
                             $('#like_val{{ post.id }}').text(like);
-                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like_push.png');
+                            $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
                             $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                           } else {
                             $('#like_val{{ post.id }}').text(like);
-                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                             $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                           }
                     }
                   }
@@ -148,14 +176,14 @@
                           var dislike = json.dislike;
                           if (json.user_like) {
                               $('#like_val{{ post.id }}').text(like);
-                              $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                              $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                               $('#dislike_val{{ post.id }}').text(dislike);
-                              $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike_push.png');
+                              $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
                             } else {
                             $('#like_val{{ post.id }}').text(like);
-                            $('#like_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/like.png');
+                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                             $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_img{{ post.id }}').attr('src', '{{ MEDIA_URL }}static/image/dislike.png');
+                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
                           }
 
                     }

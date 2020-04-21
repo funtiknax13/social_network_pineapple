@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Post, Like
+from account.models import Friend
 import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -31,6 +32,26 @@ def news(request):
 
     context = {'posts': post_list}
     return render(request, 'posts/news.html', context)
+
+
+@login_required(login_url = '/')
+def friend_news(request):
+    posts = Post.objects.all().exclude(author = request.user).order_by("-post_time")
+    friend_post = []
+    for post in posts:
+        if Friend.objects.filter(user = request.user, users_friend = post.author, confirmed = True)|Friend.objects.filter(user = post.author, users_friend = request.user, confirmed = True):
+            friend_post.append(post)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(friend_post, 20)
+    try:
+      post_list = paginator.page(page)
+    except PageNotAnInteger:
+      post_list = paginator.page(1)
+    except EmptyPage:
+      post_list = paginator.page(paginator.num_pages)
+
+    context = {'posts': post_list}
+    return render(request, 'posts/friend_news.html', context)
 
 
 @login_required(login_url = '/')

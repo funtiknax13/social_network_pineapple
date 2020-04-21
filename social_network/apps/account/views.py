@@ -79,14 +79,16 @@ def account_setting(request):
 def friends(request):
     users_friends1 = Friend.objects.filter(user = request.user, confirmed = True)
     users_friends2 = Friend.objects.filter(users_friend = request.user, confirmed = True)
-    context = {"friends1": users_friends1, "friends2": users_friends2}
+    new_friends = Friend.objects.filter(users_friend = request.user, confirmed = False).count()
+    context = {"friends1": users_friends1, "friends2": users_friends2, "not_confirmed_friends_count": new_friends}
     return render(request, 'account/friends.html', context)
 
 
 @login_required(login_url = '/')
 def friend_request(request):
     not_confirmed_friends = Friend.objects.filter(users_friend = request.user, confirmed = False)
-    context = {"not_confirmed_friends": not_confirmed_friends}
+    new_friends = Friend.objects.filter(users_friend = request.user, confirmed = False).count()
+    context = {"not_confirmed_friends": not_confirmed_friends, "not_confirmed_friends_count": new_friends}
     return render(request, 'account/friend_request.html', context)
 
 
@@ -146,9 +148,10 @@ def find_users(request):
                 users = False
     else:
         users = User.objects.all().exclude(username = request.user).order_by("-id")[:20]
-
+    new_friends = Friend.objects.filter(users_friend = request.user, confirmed = False).count()
     context = {
-        'users': users
+        'users': users,
+        "not_confirmed_friends_count": new_friends
     }
     return render(request, 'account/users.html', context)
 
@@ -166,6 +169,9 @@ def account(request, account_id):
     else:
         is_friend = True
 
+    users_friends1 = Friend.objects.filter(user = user, confirmed = True)#[:6]
+    users_friends2 = Friend.objects.filter(users_friend = user, confirmed = True)#[:6-len(users_friends1)]
+
     user_posts = Post.objects.filter(author = user).order_by("-post_time")
     page = request.GET.get('page', 1)
     paginator = Paginator(user_posts, 10)
@@ -175,5 +181,18 @@ def account(request, account_id):
       post_list = paginator.page(1)
     except EmptyPage:
       post_list = paginator.page(paginator.num_pages)
-    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend}
+    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2}
     return render(request, 'account/id.html', context)
+
+# 
+# @login_required(login_url = '/')
+# def other_user_friends(request, account_id):
+#     try:
+#         user = User.objects.get(id = account_id)
+#     except:
+#         raise Http404("Пользователь не найден!")
+#
+#     users_friends1 = Friend.objects.filter(user = user, confirmed = True)
+#     users_friends2 = Friend.objects.filter(users_friend = user, confirmed = True)
+#     context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2}
+#     return render(request, 'account/id.html', context)

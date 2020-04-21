@@ -98,17 +98,17 @@
         e.preventDefault();
         var message_text = $('#message_text').val();
         if (message_text != ''){
+           $('#message_text').val('');
            $.ajax({
             type:'POST',
             url:'{% url "dialogs:leave_message" friend.username %}',
             data:{
-              message_text:$('#message_text').val(),
+              message_text:message_text,
               csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
             },
             success:function (json) {
                 if (json.result) {
                     var doc = $.parseHTML(json.messages_list);
-                    $('#message_text').val('');
                     $('#message_block').append(doc);
                     $('#message_block').scrollTop(9999);
               }

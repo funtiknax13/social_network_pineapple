@@ -12,7 +12,11 @@
         <ul>
           <li class="active"><a href="{% url 'account:find_users' %}">Найти друга</a></li>
           <li><a href="{% url 'account:friends' %}">Друзья</a></li>
-          <li><a href="{% url 'account:friend_request' %}">Заявки в друзья </a></li>
+          <li><a href="{% url 'account:friend_request' %}">Заявки в друзья
+            {% if not_confirmed_friends_count != 0 %}
+             <span class="badge badge-primary" id="new_friends"> {{ not_confirmed_friends_count }}</span>
+            {% endif %}
+           </a></li>
         </ul>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 {% block title %} Диалоги {% endblock %}
 {% block style %} <style media="screen">
-    img {
+    .mes-img{
      -webkit-border-radius: 50%;
      -moz-border-radius: 50%;
      -ms-border-radius: 50%;
@@ -23,11 +23,44 @@
 <div class="container-fluid">
  <div class="row justify-content-center">
    <div class="main col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6 ">
+     {% if not messages %}
+        <div class="text-center">
+          <h5>У вас пока нет сообщений.</h5>
+        </div>
+        {% if friends1 or friends2 %}
+          <div class="text-left">
+            <p>
+              Вы можете написать своему другу.</p>
+          </div>
+          <div class="card-columns">
+              {% for friend in friends1 %}
+                <div class="card">
+                  <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="card-img-top"></a>
+                  <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'account:account' friend.users_friend.id %}">
+                    {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
+                    <a class="btn btn-primary" href="{% url 'dialogs:dialog' friend.users_friend.username %}">Написать</a>
+                  </div>
+                </div>
+              {% endfor %}
+              {% for friend in friends2 %}
+                <div class="card">
+                  <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="card-img-top"></a>
+                  <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'account:account' friend.user.id %}">
+                    {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
+                    <a class="btn btn-primary" href="{% url 'dialogs:dialog' friend.user.username %}">Написать</a>
+                  </div>
+                </div>
+              {% endfor %}
+              </div>
+        {% endif %}
+     {% endif %}
      {% for message in messages %}
          {% if message.sender == request.user %}
          <a href="{% url 'dialogs:dialog' message.reciever.username %}">
            <div class="media bg-secondary mt-3 p-2 rounded">
-             <img class="d-flex mr-3" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
+             <img class="d-flex mr-3 mes-img" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
              <div class="media-body wordwrap textowerflow">
                <h5 class="mt-0"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
                  <time class="float-right">{{message.message_time}}</time></h5>
@@ -39,7 +72,7 @@
           {% if not message.is_readed %}
           <a href="{% url 'dialogs:dialog' message.sender.username %}">
             <div class="media bg-info mt-3 p-2 rounded">
-              <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
+              <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
                 <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
@@ -50,7 +83,7 @@
           {% else %}
           <a href="{% url 'dialogs:dialog' message.sender.username %}">
             <div class="media bg-secondary mt-3 p-2 rounded">
-              <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
+              <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
                 <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
