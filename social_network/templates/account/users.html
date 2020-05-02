@@ -36,10 +36,10 @@
                 <img class="img-fluid" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="card-img-top">
               </a>
               <div class="card-body">
-                <h4 class="card-title">
+                <h4 class="card-title wordwrap textowerflow">
                   <a href="{% url 'account:account' user.id %}">{{user.first_name}} {{user.last_name}}</a>
                 </h4>
-                <p class="card-text">
+                <p class="card-text wordwrap textowerflow">
                   {% if user.profile.birth_date %}
                     {{ user.profile.birth_date }}
                   <br>

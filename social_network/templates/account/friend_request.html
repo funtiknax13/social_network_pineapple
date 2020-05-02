@@ -32,9 +32,9 @@
               <img src="{{ not_confirmed_friend.user.profile.avatar.url }}" alt="{{ not_confirmed_friend.user.username }}" class="card-img-top">
             </a>
             <div class="card-body">
-              <h4 class="card-title"><a href="{% url 'account:account' not_confirmed_friend.user.id %}">
+              <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' not_confirmed_friend.user.id %}">
               {{ not_confirmed_friend.user.first_name }} {{ not_confirmed_friend.user.last_name }}</a></h4>
-              <p class="card-text">
+              <p class="card-text wordwrap textowerflow">
                 {% if not_confirmed_friend.user.profile.birth_date %}
                   {{ not_confirmed_friend.user.profile.birth_date }}
                 <br>

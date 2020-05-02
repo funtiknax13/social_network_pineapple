@@ -33,7 +33,7 @@
         <div class="card">
           <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="card-img-top"></a>
           <div class="card-body">
-            <h4 class="card-title"><a href="{% url 'account:account' friend.users_friend.id %}">
+            <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
             {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
             <a class="btn btn-primary" href="{% url 'account:delete_friend' friend.users_friend.id %}">Удалить из друзей</a>
           </div>
@@ -43,7 +43,7 @@
         <div class="card">
           <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="card-img-top"></a>
           <div class="card-body">
-            <h4 class="card-title"><a href="{% url 'account:account' friend.user.id %}">
+            <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
             {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
             <a class="btn btn-primary" href="{% url 'account:delete_friend' friend.user.id %}">Удалить из друзей</a>
           </div>

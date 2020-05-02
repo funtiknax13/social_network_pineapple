@@ -4,15 +4,15 @@
           <a href="{% url 'account:user_account' %}">
           <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
           <div class="media-body wordwrap textowerflow">
-            <h6 class="mt-0">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
-            {{message.message_text|linebreaks}}
+            <h6 class="mt-0 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+            {{message.message_text|linebreaks|urlizetrunc:30}}
           </div>
         </div>
       {% else %}
         <div class="media w-75 float-right bg-success mb-3 mr-1 p-1 rounded">
           <div class="media-body wordwrap textowerflow">
-            <h6 class="mt-0 mb-1">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
-            {{message.message_text|linebreaks}}
+            <h6 class="mt-0 mb-1 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+            {{message.message_text|linebreaks|urlizetrunc:30}}
           </div>
           <a href="{% url 'account:account' message.sender.id %}"><img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
         </div>

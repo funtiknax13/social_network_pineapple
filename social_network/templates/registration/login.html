@@ -1,12 +1,9 @@
 {% extends  'base.html' %}
-
+{% load static %}
 {% block style %}
-<style media="screen">
-   input[type = text], input[type = password]{
-     width: 100%
-   }
-</style>
+<link href="{% static 'css/registration/reg.css' %}" rel="stylesheet">
 {% endblock %}
+
 
 {% block title %} Войти {% endblock %}
 

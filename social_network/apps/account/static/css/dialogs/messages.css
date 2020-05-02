@@ -1,0 +1,14 @@
+.mes-img{
+ -webkit-border-radius: 50%;
+ -moz-border-radius: 50%;
+ -ms-border-radius: 50%;
+ -o-border-radius: 50%;
+ border-radius: 50%;
+ }
+ a{
+   color:#222;
+ }
+ a:hover {
+   text-decoration: none; /* Добавляем подчеркивание при наведении курсора на ссылку */
+   color: #222; /* Ссылка красного цвета */
+}

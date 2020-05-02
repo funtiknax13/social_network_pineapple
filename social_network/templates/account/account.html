@@ -1,63 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
 {% block style %}
-<style media="screen">
-  input[type = text]{
-    display:block;
-    width:100%;
-    height:calc(1.5em + .75rem + 2px);
-    padding:.375rem .75rem;
-    font-size:1rem;
-    font-weight:400;
-    line-height:1.5;
-    color:#495057;
-    background-color:#fff;
-    background-clip:padding-box;
-    border:1px solid #ced4da;
-    border-radius:.25rem;
-    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
-  }
-  textarea{
-    display:block;
-    width:100%;
-    height:calc(1.5em + .75rem + 2px);
-    padding:.375rem .75rem;
-    font-size:1rem;
-    font-weight:400;
-    height:80px;
-    color:#495057;
-    background-color:#fff;
-    background-clip:padding-box;
-    border:1px solid #ced4da;
-    border-radius:.25rem;
-    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
-  }
-   input[type = file]{
-     display:block;
-     width:100%
-   }
-   @media (min-width: 576px) {
-    .card-columns {
-        column-count: 1;
-   }
-   }
-    @media (min-width: 768px) {
-        .card-columns {
-            column-count: 1;
-       }
-   }
-    @media (min-width: 992px) {
-        .card-columns {
-            column-count: 2;
-       }
-   }
-    @media (min-width: 1200px) {
-        .card-columns {
-            column-count: 2;
-       }
-   }
-</style>
+<link href="{% static 'css/account/account.css' %}" rel="stylesheet">
+<link href="{% static 'css/posts/post_img.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block main %}
@@ -66,11 +13,11 @@
   <div class="container-fluid text-center">
     <div class="row content">
       <div class="col-md-2 sidenav">
-        <h3>{{user.first_name}} {{user.last_name}}</h3>
+        <h3 class="wordwrap textowerflow">{{user.first_name}} {{user.last_name}}</h3>
         {% if user.profile.avatar %}
           <p><a href="{% url 'account:account_setting' %}" title="Изменить"><img class="img-thumbnail" src="{{ user.profile.avatar.url }}" width="100%" alt="{{ user.username }}" ></a></p>
         {% endif %}
-        <p>
+        <p class="wordwrap textowerflow">
           {% if user.profile.birth_date %}
             {{ user.profile.birth_date }}
           <br>
@@ -97,7 +44,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <form action="{% url 'account:user_account' %}" method="post" enctype="multipart/form-data" class="text-left">
+              <form method="post" enctype="multipart/form-data" class="text-left" id="ctrate_post">
                 {% csrf_token %}
                 {% for field in form %}
                  <div class="form-group">
@@ -133,18 +80,27 @@
                 <h4 class="card-title">{{ post.post_title }}</h4>
               {% endif %}
               <p class="card-text">
-                {{ post.post_text|linebreaks }}
+                {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+                <strong><time>{{ post.post_time }}</time></strong>
               </p>
               <p>
-              <strong><time>{{ post.post_time }}</time></strong>
-              <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="like" width="20px">
-                <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
-              </a>
-              <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
-                <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
-              </a>
+                <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
+                  <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                  <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                </a>
+                <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
+                  <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="like" width="20px">
+                  <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
+                </a>
+                <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
+                  <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                  <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
+                </a>
+                <br>
+                <br>
+                <a href="{% url 'posts:delete_post' post.id %}" class="btn btn-sm btn-primary float-left w-49">Удалить</a>
+                <a href="{% url 'posts:edit_post' post.id %}" class="btn btn-sm btn-primary float-right w-49">Редактировать</a>
+                <br>
               </p>
             </div>
           </div>
@@ -252,5 +208,7 @@
     </div>
   </div>
 
+<script src="{% static 'js/account/create_post.js' %}" charset="utf-8">
+</script>
 
 {% endblock %}

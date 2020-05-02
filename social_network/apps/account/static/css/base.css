@@ -1,0 +1,134 @@
+.navbar-nav li {
+  padding-right: 25px;
+}
+.nav-link{font-size: 1.2em !important}
+
+.textowerflow{
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+.wordwrap{
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+  }
+
+.category-wrap {
+  padding: 15px;
+  background: white;
+  width: 100%;
+  margin-top: 10px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,.1);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.category-wrap ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.category-wrap li {margin: 12px 0 0 0px;}
+
+.category-wrap a {
+  text-decoration: none;
+  display: block;
+  font-size: 13px;
+  color: rgba(0,0,0,.6);
+  padding: 5px;
+  position: relative;
+  transition: .3s linear;
+}
+.category-wrap a:after {
+  position: absolute;
+  right: 5px;
+  color: white;
+}
+.category-wrap a:hover {
+  background: #80C8A0;
+  color: white;
+}
+.category-wrap .active {
+  background: #80C1AF;
+  color: white;
+}
+
+::-webkit-scrollbar-button {
+   background-image:url('');
+   background-repeat:no-repeat;
+   width:5px;
+   height:0px
+   }
+
+ ::-webkit-scrollbar-track {
+   background-color:#ecedee
+   }
+
+ ::-webkit-scrollbar-thumb {
+   -webkit-border-radius: 0px;
+   border-radius: 0px;
+   background-color:#6dc0c8;
+   }
+
+ ::-webkit-scrollbar-thumb:hover{
+   background-color:#56999f;
+   }
+
+ ::-webkit-resizer{
+   background-image:url('');
+   background-repeat:no-repeat;
+   width:4px;
+   height:0px
+   }
+
+ ::-webkit-scrollbar{
+   width: 4px;
+   }
+
+body{
+  background: radial-gradient(100% 1000%, #FFFFFF, #CAEFD8);
+
+}
+
+.card-columns{-webkit-column-count:5;-moz-column-count:5;column-count:5;-webkit-column-gap:1.25rem;-moz-column-gap:1.25rem;column-gap:1.25rem;-webkit-perspective:1;}
+.card-columns .card{
+  display:block;
+  width:100%;
+  -webkit-column-break-inside: avoid;
+  -webkit-backface-visibility: hidden;
+  -moz-page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
+  -o-column-break-inside: avoid;
+  -ms-column-break-inside: avoid;
+  column-break-inside: avoid;
+  page-break-inside: avoid;
+  }
+  @media (min-width: 576px) {
+   .card-columns {
+       column-count: 2;
+  }
+  }
+   @media (min-width: 768px) {
+       .card-columns {
+           column-count: 3;
+      }
+  }
+   @media (min-width: 992px) {
+       .card-columns {
+           column-count: 3;
+      }
+  }
+   @media (min-width: 1200px) {
+       .card-columns {
+           column-count: 4;
+      }
+  }
+.text-shadow {
+color:#222;
+font-weight:bold;
+font-size: 1.2em !important;
+text-shadow: -1px 0 1px white, 0 -1px 1px white, 0 1px 1px white, 1px 0 1px white, 0 0 8px white, 0 0 8px white, 0 0 8px white, 2px 2px 3px black;
+}

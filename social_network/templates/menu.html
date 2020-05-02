@@ -36,45 +36,4 @@
     </div>
   </nav>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script type="text/javascript">
-    $.ajax({
-        url: "{% url 'dialogs:new_messages' %}",
-        type: 'GET',
-        data: {'check': true},
-
-        success: function (json) {
-            if (json.result) {
-                var doc = json.messages_count;
-                var new_friends = json.new_friends;
-                if (doc != 0){
-                  $('#messages_count').text(doc);
-                }
-                if (new_friends != 0){
-                  $('#new_friends').text(new_friends);
-                }
-
-            }
-        }
-    });
-
-    setInterval(function new_messages() {
-          $.ajax({
-              url: "{% url 'dialogs:new_messages' %}",
-              type: 'GET',
-              data: {'check': true},
-
-              success: function (json) {
-                  if (json.result) {
-                    var doc = json.messages_count;
-                    var new_friends = json.new_friends;
-                    if (doc != 0){
-                      $('#messages_count').text(doc);
-                    }
-                    if (new_friends != 0){
-                      $('#new_friends').text(new_friends);
-                    }
-                  }
-              }
-          });
-      }, 10000);
-  </script>
+  <script src="{% static 'js/dialogs/new_messages.js' %}" charset="utf-8"></script>

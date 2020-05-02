@@ -128,7 +128,7 @@ def delete_friend(request, account_id):
 
     new_friend = Friend.objects.filter(user = user, users_friend = request.user)|Friend.objects.filter(user = request.user, users_friend = user )
     new_friend.delete()
-    return HttpResponseRedirect(reverse('account:friends'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 #Поиск/отображение всех пользователей
@@ -146,6 +146,8 @@ def find_users(request):
                 users = queryset.filter(Q(first_name__iexact=search_list[0]) | Q(last_name__iexact=search_list[0]))
             else:
                 users = False
+        else:
+            users = False
     else:
         users = User.objects.all().exclude(username = request.user).order_by("-id")[:20]
     new_friends = Friend.objects.filter(users_friend = request.user, confirmed = False).count()
@@ -184,7 +186,7 @@ def account(request, account_id):
     context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2}
     return render(request, 'account/id.html', context)
 
-# 
+#
 # @login_required(login_url = '/')
 # def other_user_friends(request, account_id):
 #     try:

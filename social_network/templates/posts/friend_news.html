@@ -1,29 +1,9 @@
 {% extends 'base.html' %}
-
-{% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
+{% load static %}
+{% block title %} Новости {% endblock %}
 {% block style %}
-<style media="screen">
-    @media (min-width: 576px) {
-     .card-columns {
-         column-count: 1;
-    }
-    }
-     @media (min-width: 768px) {
-         .card-columns {
-             column-count: 1;
-        }
-    }
-     @media (min-width: 992px) {
-         .card-columns {
-             column-count: 2;
-        }
-    }
-     @media (min-width: 1200px) {
-         .card-columns {
-             column-count: 2;
-        }
-    }
-</style>
+<link href="{% static 'css/posts/post_columns.css' %}" rel="stylesheet">
+<link href="{% static 'css/posts/post_img.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block main %}
@@ -44,22 +24,26 @@
         <div class="card-columns p-2">
         {% for post in posts %}
           <div class="card mt-2 text-white bg-dark">
-            <div class="card-header">
+            <div class="card-header wordwrap textowerflow">
                 <a href="{% url 'account:account' post.author.id %}" class="text-white">{{ post.author.first_name }} {{ post.author.last_name }}</a>
             </div>
             {% if post.post_image %}
               <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
             {% endif %}
-              <div class="card-body">
+              <div class="card-body wordwrap textowerflow">
               {% if post.post_title %}
                 <h4 class="card-title">{{ post.post_title }}</h4>
               {% endif %}
               <p class="card-text">
-                {{ post.post_text|linebreaks }}
+                {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+                <strong><time>{{ post.post_time }}</time></strong>
               </p>
               <p>
-                <strong><time>{{ post.post_time }}</time></strong>
-              <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
+                <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
+                  <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                  <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                </a>
+                <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
                 <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="like" width="20px">
                 <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
               </a>
@@ -67,6 +51,7 @@
                 <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
                 <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
               </a>
+              <br>
               </p>
 
             </div>

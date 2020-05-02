@@ -1,22 +1,8 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %} Диалоги {% endblock %}
-{% block style %} <style media="screen">
-    .mes-img{
-     -webkit-border-radius: 50%;
-     -moz-border-radius: 50%;
-     -ms-border-radius: 50%;
-     -o-border-radius: 50%;
-     border-radius: 50%;
-     }
-     a{
-       color:#222;
-     }
-     a:hover {
-       text-decoration: none; /* Добавляем подчеркивание при наведении курсора на ссылку */
-       color: #222; /* Ссылка красного цвета */
-    }
-</style>
+{% block style %}
+<link href="{% static 'css/dialogs/messages.css' %}" rel="stylesheet">
 {% endblock %}
 {% block main %}
 {% include 'menu.html' %}
@@ -37,7 +23,7 @@
                 <div class="card">
                   <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="card-img-top"></a>
                   <div class="card-body">
-                    <h4 class="card-title"><a href="{% url 'account:account' friend.users_friend.id %}">
+                    <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
                     {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
                     <a class="btn btn-primary" href="{% url 'dialogs:dialog' friend.users_friend.username %}">Написать</a>
                   </div>
@@ -47,7 +33,7 @@
                 <div class="card">
                   <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="card-img-top"></a>
                   <div class="card-body">
-                    <h4 class="card-title"><a href="{% url 'account:account' friend.user.id %}">
+                    <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
                     {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
                     <a class="btn btn-primary" href="{% url 'dialogs:dialog' friend.user.username %}">Написать</a>
                   </div>
@@ -62,9 +48,9 @@
            <div class="media bg-secondary mt-3 p-2 rounded">
              <img class="d-flex mr-3 mes-img" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
              <div class="media-body wordwrap textowerflow">
-               <h5 class="mt-0"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
+               <h5 class="mt-0 wordwrap textowerflow"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
                  <time class="float-right">{{message.message_time}}</time></h5>
-               {{message.message_text|linebreaks}}
+               {{message.message_text|linebreaks|truncatewords_html:25}}
              </div>
            </div>
           </a>
@@ -74,9 +60,9 @@
             <div class="media bg-info mt-3 p-2 rounded">
               <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
+                <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
-                  {{message.message_text|linebreaks}}
+                  {{message.message_text|linebreaks|truncatewords_html:25}}
               </div>
             </div>
             </a>
@@ -85,9 +71,9 @@
             <div class="media bg-secondary mt-3 p-2 rounded">
               <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
               <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0">{{ message.sender.first_name }} {{message.sender.last_name}}
+                <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
                   <time class="float-right">{{message.message_time}}</time></h5>
-                  {{message.message_text|linebreaks}}
+                  {{message.message_text|linebreaks|truncatewords_html:25}}
               </div>
             </div>
           </a>

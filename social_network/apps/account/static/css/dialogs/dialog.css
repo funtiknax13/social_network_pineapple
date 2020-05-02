@@ -1,0 +1,30 @@
+img {
+ -webkit-border-radius: 50%;
+ -moz-border-radius: 50%;
+ -ms-border-radius: 50%;
+ -o-border-radius: 50%;
+ border-radius: 50%;
+ }
+ textarea{
+   width:75%;
+   height:57px;
+   resize:none;
+   outline:none;
+   border-width:2px;
+   border-radius:2px;
+   background:#ecf0f1;
+   color:rgb(52, 73, 94);
+ }
+ button{
+   width:25%;
+   height:57px;
+ }
+ div .main{
+   /* border: 1px solid gray; */
+   padding: 10px;
+   height:100%;
+ }
+ div .messages{
+   height:80vh;
+   overflow-y: auto;
+ }

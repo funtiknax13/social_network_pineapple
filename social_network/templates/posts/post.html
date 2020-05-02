@@ -1,82 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
-
+{% load thumbnail %}
+{% block title %} Все новости {% endblock %}
 {% block style %}
-<link href="{% static 'css/account/id.css' %}" rel="stylesheet">
-<link href="{% static 'css/posts/post_img.css' %}" rel="stylesheet">
+<link href="{% static 'css/posts/post_columns.css' %}" rel="stylesheet">
+<style media="screen">
+  textarea{
+    display:block;
+    width:75%;
+    height:50px;
+    padding:.375rem .75rem;
+    font-size:1rem;
+    font-weight:400;
+    color:#495057;
+    background-color:#fff;
+    background-clip:padding-box;
+    border:1px solid #ced4da;
+    border-radius:.25rem;
+    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
+  }
+  input[type = submit]{
+    display:block;
+    width:25%;
+    height:50px;
+  }
+  .my-card-img-top{
+    max-width: 100%;
+    max-height: 70vh;
+    width:auto;
+    height: auto;
+    margin: auto;
+  }
+  hr {
+    margin: -30px auto 10px;
+  	padding: 0;
+  	height: 50px;
+  	border: none;
+  	border-bottom: 1px solid #fff;
+  	box-shadow: 0 20px 20px -20px #333;
+  	width: 100%;
+  }
+</style>
 {% endblock %}
 
 {% block main %}
-{% include 'menu.html' %}
-<div class="container-fluid text-center">
-  <div class="row content">
-    <div class="col-md-2 sidenav">
-         <h3 class="wordwrap textowerflow">{{other_user.first_name}} {{other_user.last_name}}</h3>
-       {% if other_user.profile.avatar %}
-         <p><img  class="img-thumbnail" src="{{ other_user.profile.avatar.url }}" width="100%" alt="{{ other_user.username }}" ></p>
-       {% endif %}
-       <p class="wordwrap textowerflow">
-         {% if other_user.profile.birth_date %}
-           {{ other_user.profile.birth_date }}
-         <br>
-         {% endif %}
-         {% if other_user.profile.city %}
-           {{ other_user.profile.city}}
-         {% endif %}
-       </p>
-       <div class="category-wrap">
-         <ul>
-           <li><a href="{% url 'dialogs:dialog' other_user.username %}">Написать</a></li>
-           {% if is_friend %}
-            <li><a href="{% url 'account:add_friend' other_user.id %}">Добавить в друзья</a></li>
-           {% endif %}
-         </ul>
-       </div>
-       <div class="category-wrap">
-         <h6>Друзья</h6>
-         <div>
-           {% for friend in friends1 %}
-             <div class="friend_block">
-               <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="rounded-circle w-100"></a>
-                 <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
-                 {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
-             </div>
-           {% endfor %}
-           {% for friend in friends2 %}
-             <div class="friend_block">
-               <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="rounded-circle w-100"></a>
-                 <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
-                 {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
-             </div>
-           {% endfor %}
-         </div>
-       </div>
-       </div>
-
-     <div class="col-md-8 text-left">
-       <div class="card-columns">
-        {% for post in user_posts %}
-          <div class="card mb-2 mt-2 text-white bg-dark">
+  {% include 'menu.html' %}
+  <div class="container-fluid">
+   <div class="row justify-content-center">
+     <div class="main col-12 col-sm-12 col-md-10 col-lg-8 col-xl-6 ">
+        <div class="card mt-2 text-white bg-dark">
+            <div class="card-header wordwrap textowerflow">
+                <a href="{% url 'account:account' post.author.id %}" class="text-white">{{ post.author.first_name }} {{ post.author.last_name }}</a>
+                <a class="close" href="{% url 'posts:back' %}">
+                  <span aria-hidden="true">&times;</span>
+                </a>
+            </div>
             {% if post.post_image %}
-              <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+              <img class="my-card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
             {% endif %}
-              <div class="card-body">
+              <div class="card-body wordwrap textowerflow">
               {% if post.post_title %}
                 <h4 class="card-title">{{ post.post_title }}</h4>
               {% endif %}
               <p class="card-text">
-                {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25}}
+                {{ post.post_text|linebreaks|urlizetrunc:30 }}
                 <strong><time>{{ post.post_time }}</time></strong>
               </p>
               <p>
-                <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
+                  <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
                   <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
                   <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
                 </a>
                 <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                  <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="like" width="20px">
+                  <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
                   <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
                 </a>
                 <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
@@ -86,7 +82,39 @@
                 <br>
               </p>
             </div>
+            <hr>
+            <div class="card-comment p-3">
+              <form action="{% url 'posts:leave_comment' post.id %}" method="post" class="form-inline mb-3">
+                {% csrf_token %}
+                <textarea name="text"></textarea>
+                <input type="submit" name="leave_comment" value="Отправить" class="btn btn-primary">
+              </form>
+              {% for comment in post.post_comments.all %}
+               {% if comment.comment_author == request.user %}
+                  <div class="media w-100 bg-success mb-3 p-1 rounded">
+                    <a href="{% url 'account:account' comment.comment_author.id %}">
+                     <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}">
+                  </a>
+                    <div class="media-body wordwrap textowerflow">
+                      <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
+                      {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                      <a href="{% url 'posts:delete_comment' post.id comment.id %}" class="btn btn-primary float-right mb-1 mr-1" >Удалить</a>
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="media w-100 bg-secondary mb-3 p-1 rounded">
+                    <a href="{% url 'account:account' comment.comment_author.id %}">
+                    <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}"></a>
+                    <div class="media-body wordwrap textowerflow">
+                      <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
+                      {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
+
           <script type="text/javascript">
             $.ajax({
                 url: "{% url 'posts:user_like' post.id %}",
@@ -168,26 +196,9 @@
                 });
               });
             </script>
-        {% endfor %}
-        </div>
-        <nav aria-label="post-pagination">
-          <ul class="pagination pagination-lg justify-content-center">
-            {% if posts.has_previous %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ posts.previous_page_number }}">Назад</a>
-              </li>
-            {% endif %}
-            {% if posts.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ posts.next_page_number }}">Предыдущие</a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-    </div>
-    <div class="col-md-2 sidenav">
+      </div>
 
     </div>
   </div>
-</div>
+
 {% endblock %}

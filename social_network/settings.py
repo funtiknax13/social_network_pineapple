@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'account',
     'dialogs',
     'posts',
+    'sorl.thumbnail',
 
 ]
 
@@ -140,3 +141,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+THUMBNAIL_DEBUG = True
