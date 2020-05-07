@@ -1,0 +1,10 @@
+<div class="media w-100 bg-success mb-3 p-1 rounded" id="comment{{comment.id}}">
+  <a href="{% url 'account:account' comment.comment_author.id %}">
+   <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}">
+</a>
+  <div class="media-body wordwrap textowerflow">
+    <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
+    {{comment.comment_text|linebreaks|urlizetrunc:30}}
+    <!-- <a href="#" class="delete_comment btn btn-primary float-right mb-1 mr-1" data-id="comment{{comment.id}}" data-action="{{comment.id}}" >Удалить</a> -->
+  </div>
+</div>

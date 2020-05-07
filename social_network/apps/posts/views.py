@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from .models import Post, Like, Comment
 from account.models import Friend
 import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import PostForm
 from django.utils import timezone
+from django.template.loader import render_to_string
 
 @login_required(login_url = '/')
 def delete_post(request, post_id):
@@ -45,6 +47,7 @@ def edit_post(request, post_id):
     context = {'form': form, "post": post}
     return render(request, 'posts/edit_post.html', context)
 
+
 @login_required(login_url = '/')
 def post(request, post_id):
     try:
@@ -52,10 +55,6 @@ def post(request, post_id):
     except:
         raise Http404("Пост не найден!")
 
-    # if request.session.keys():
-    #     if request.path_info != request.META.get('HTTP_REFERER'):
-    #         request.session['return_path'] = request.META.get('HTTP_REFERER','/')
-    # else:
     if request.META.get('HTTP_REFERER') == 'http://127.0.0.1:8000/news'+str(post_id)+'/' or request.META.get('HTTP_REFERER') == 'http://mypineapple.pythonanywhere.com/news'+str(post_id)+'/':
         pass
     else:
@@ -103,7 +102,7 @@ def friend_news(request):
 
 @login_required(login_url = '/')
 def like_news(request):
-    like_posts = Like.objects.filter(user = request.user, like_or_dislike = 'like')
+    like_posts = request.user.post_liked.all()
     page = request.GET.get('page', 1)
     paginator = Paginator(like_posts, 20)
     try:
@@ -118,89 +117,36 @@ def like_news(request):
 
 
 @login_required(login_url = '/')
-def like_or_dislike(request, post_id, is_like):
-    try:
-        post = Post.objects.get(id = post_id)
-    except:
-        raise Http404("Пост не найден!")
-    old_like = Like.objects.filter(user = request.user, for_post = post)
-    if old_like:
-        like = Like.objects.get(user = request.user, for_post = post)
-        if like.like_or_dislike == 'like' and is_like == 'like':
-            like.delete()
-            post.post_like -= 1
-            post.save()
-        elif like.like_or_dislike == 'dislike' and is_like == 'dislike':
-            like.delete()
-            post.post_dislike -= 1
-            post.save()
-        elif like.like_or_dislike == 'like' and is_like == 'dislike':
-            like.like_or_dislike = 'dislike'
-            like.save()
-            post.post_dislike += 1
-            post.post_like -= 1
-            post.save()
-        elif like.like_or_dislike == 'dislike' and is_like == 'like':
-            like.like_or_dislike = "like"
-            like.save()
-            post.post_dislike -= 1
-            post.post_like += 1
-            post.save()
-    else:
-        new_like = Like(user = request.user, for_post = post, like_or_dislike = is_like)
-        new_like.save()
-        if is_like == 'like':
-            post.post_like += 1
-            post.save()
-        elif is_like == 'dislike':
-            post.post_dislike += 1
-            post.save()
-    is_like = Like.objects.filter(user = request.user, for_post = post)
-    if is_like:
-        user_like = True
-        is_like = Like.objects.get(user = request.user, for_post = post)
-        user_like_val = is_like.like_or_dislike
-    else:
-        user_like = False
-        user_like_val = ''
+def like_or_dislike(request):
+    post_id = request.POST.get('id')
+    action = request.POST.get('action')
+    if post_id and action:
+        try:
+            post = Post.objects.get(id=post_id)
+            if action == 'like':
+                post.post_like.add(request.user)
+            else:
+                post.post_like.remove(request.user)
+            if action == 'dislike':
+                post.post_dislike.add(request.user)
+            else:
+                post.post_dislike.remove(request.user)
+                return JsonResponse({'status':'ok'})
+        except:
+            pass
+    return JsonResponse({'status':'ok'})
 
-    return HttpResponse(
-        json.dumps({
-            "result": True,
-            "user_like": user_like,
-            "user_like_val": user_like_val,
-            "like": post.post_like,
-            "dislike": post.post_dislike
-        }),
-        content_type="application/json"
-    )
 
 @login_required(login_url = '/')
-def user_like(request, post_id):
-    try:
-        post = Post.objects.get(id = post_id)
-    except:
-        raise Http404("Пост не найден!")
+def user_like(request):
+    likes = Like.objects.all()
+    for like in likes:
+        if like.like_or_dislike == "like":
+            like.for_post.post_like.add(like.user)
+        if like.like_or_dislike == "dislike":
+            like.for_post.post_dislike.add(like.user)
+    return HttpResponse("Complete")
 
-    is_like = Like.objects.filter(user = request.user, for_post = post)
-    if is_like:
-        user_like = True
-        is_like = Like.objects.get(user = request.user, for_post = post)
-        user_like_val = is_like.like_or_dislike
-    else:
-        user_like = False
-        user_like_val = ''
-
-    return HttpResponse(
-        json.dumps({
-            "result": True,
-            "user_like": user_like,
-            "user_like_val": user_like_val,
-            "like": post.post_like,
-            "dislike": post.post_dislike
-        }),
-        content_type="application/json"
-    )
 
 @login_required(login_url = '/')
 def leave_comment(request, post_id):
@@ -209,19 +155,34 @@ def leave_comment(request, post_id):
     except:
         raise Http404("Пост не найден!")
 
-    post.post_comments.create(comment_author = request.user, comment_text = request.POST['text'], comment_pubdate = timezone.now())
-    return HttpResponseRedirect(reverse('posts:post', args = (post_id,)))
+    if request.method == 'POST':
+        comment_text = request.POST['comment_text']
+        comment = post.post_comments.create(comment_author = request.user, comment_text = comment_text, comment_pubdate = timezone.now())
+
+    if comment:
+        context = {'comment': comment, 'post': post}
+        return HttpResponse(
+            json.dumps({
+                "result": True,
+                "comment": render_to_string('posts/create_comment.html', context),
+            }),
+            content_type="application/json")
+    else:
+        return HttpResponse(
+            json.dumps({
+                "result": False,
+            }),
+            content_type="application/json")
 
 
 @login_required(login_url = '/')
-def delete_comment(request, post_id, comment_id):
+def delete_comment(request, comment_id):
     try:
         comment = Comment.objects.get(id = comment_id)
     except:
         raise Http404("Комментарий не найден!")
-
     comment.delete()
-    return HttpResponseRedirect(reverse('posts:post', args = (post_id,)))
+    return JsonResponse({'status':'ok'})
 
 
 def back(request):

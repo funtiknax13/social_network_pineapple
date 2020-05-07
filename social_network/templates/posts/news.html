@@ -27,10 +27,12 @@
             <div class="card-header wordwrap textowerflow">
                 <a href="{% url 'account:account' post.author.id %}" class="text-white">{{ post.author.first_name }} {{ post.author.last_name }}</a>
             </div>
+            {% with total_likes=post.post_like.count users_like=post.post_like.all total_dislikes=post.post_dislike.count users_dislike=post.post_dislike.all%}
+
             {% if post.post_image %}
               <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
             {% endif %}
-              <div class="card-body wordwrap textowerflow">
+              <div class="card-body">
               {% if post.post_title %}
                 <h4 class="card-title">{{ post.post_title }}</h4>
               {% endif %}
@@ -39,103 +41,97 @@
                 <strong><time>{{ post.post_time }}</time></strong>
               </p>
               <p>
-                <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
-                  <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
-                  <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
-                </a>
-                <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                  <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
-                  <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
-                </a>
-                <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                  <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
-                  <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
-                </a>
+                {% if post.post_comments.count > 0 %}
+                  <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-info float-left mr-2">
+                    <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                    <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                  </a>
+                {% else %}
+                  <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left mr-2">
+                    <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                    <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                  </a>
+                {% endif %}
+
+                {% if request.user in users_dislike %}
+                  <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-danger float-right ml-2" data-action="undislike" data-id="{{ post.id }}">
+                    <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
+                    <strong id="dislike_val{{ post.id }}">{{total_dislikes}}</strong>
+                  </a>
+                {% else %}
+                  <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2" data-action="dislike" data-id="{{ post.id }}">
+                    <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
+                    <strong id="dislike_val{{ post.id }}">{{total_dislikes}}</strong>
+                  </a>
+                {% endif %}
+
+                {% if request.user in users_like %}
+                  <a href="#" id="like_block{{ post.id }}" class="btn btn-success float-right ml-2" data-action="unlike" data-id="{{ post.id }}">
+                    <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                    <strong id="like_val{{ post.id }}">{{total_likes}}</strong>
+                  </a>
+                {% else %}
+                  <a href="#" id="like_block{{ post.id }}" class="btn btn-secondary float-right ml-2" data-action="like" data-id="{{ post.id }}">
+                    <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                    <strong id="like_val{{ post.id }}">{{total_likes}}</strong>
+                  </a>
+                {% endif %}
                 <br>
               </p>
             </div>
           </div>
-
+          {% endwith %}
           <script type="text/javascript">
-            $.ajax({
-                url: "{% url 'posts:user_like' post.id %}",
-                type: 'GET',
-                data: {'check': true},
 
-                success: function (json) {
-                    if (json.result) {
-                      var like = json.like;
-                      var dislike = json.dislike;
-                      if (json.user_like) {
-                        if (json.user_like_val == "like"){
-                          $('#like_val{{ post.id }}').text(like);
-                          $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
-                          $('#dislike_val{{ post.id }}').text(dislike);
-                        } else {
-                          $('#like_val{{ post.id }}').text(like);
-                          $('#dislike_val{{ post.id }}').text(dislike);
-                          $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
-                        }
-                      } else {
-                        $('#like_val{{ post.id }}').text(like);
-                        $('#dislike_val{{ post.id }}').text(dislike);
-                      }
-                    }
-                }
-            });
-
-              $('#like_block{{ post.id }}').on('click', function(e) {
-                e.preventDefault();
-               $.ajax({
-                  type:'GET',
-                  url:"{% url 'posts:like_or_dislike' post.id 'like' %}",
-                  data: {'check': true},
-                  success:function (json) {
-                      if (json.result) {
-                          var like = json.like;
-                          var dislike = json.dislike;
-                          if (json.user_like) {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                          } else {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                          }
-                    }
+            $('#like_block{{ post.id }}').on('click', function(e){
+              e.preventDefault();
+              $.post(
+                '{% url "posts:like_or_dislike" %}',
+                {id: $(this).data('id'),action: $(this).data('action')},
+                function(data){
+                  if (data['status'] == 'ok'){
+                    var previous_action = $('#like_block{{ post.id }}').data('action');
+                    var dislike_previous_action = $('#dislike_block{{ post.id }}').data('action');
+                    // Изменяем переменную действия.
+                    $('#like_block{{ post.id }}').data('action', previous_action == 'like' ?'unlike' : 'like');
+                    $('#dislike_block{{ post.id }}').data('action', 'dislike')
+                    // Изменяем цвет ссылки.
+                    $('#like_block{{ post.id }}').attr('class', previous_action == 'like' ? 'btn btn-success float-right ml-2' : 'btn btn-secondary float-right ml-2');
+                    $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
+                    //$('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+                    // Обновляем общее количество лайков.
+                    var previous_likes = parseInt($('#like_val{{ post.id }}').text());
+                    $('#like_val{{ post.id }}').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                    var previous_dislikes = parseInt($('#dislike_val{{ post.id }}').text());
+                    $('#dislike_val{{ post.id }}').text(dislike_previous_action == 'undislike' ? previous_dislikes - 1 : previous_dislikes );
                   }
                 });
               });
 
-              $('#dislike_block{{ post.id }}').on('click', function(e) {
+              $('#dislike_block{{ post.id }}').on('click', function(e){
                 e.preventDefault();
-               $.ajax({
-                  type:'GET',
-                  url:"{% url 'posts:like_or_dislike' post.id 'dislike' %}",
-                  data: {'check': true},
-                  success:function (json) {
-                      if (json.result) {
-                          var like = json.like;
-                          var dislike = json.dislike;
-                          if (json.user_like) {
-                              $('#like_val{{ post.id }}').text(like);
-                              $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                              $('#dislike_val{{ post.id }}').text(dislike);
-                              $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
-                            } else {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                          }
-
+                $.post(
+                  '{% url "posts:like_or_dislike" %}',
+                  {id: $(this).data('id'),action: $(this).data('action')},
+                  function(data){
+                    if (data['status'] == 'ok'){
+                      var previous_action = $('#dislike_block{{ post.id }}').data('action');
+                      var like_previous_action = $('#like_block{{ post.id }}').data('action');
+                      // Изменяем переменную действия.
+                      $('#dislike_block{{ post.id }}').data('action', previous_action == 'dislike' ?'undislike' : 'dislike');
+                      $('#like_block{{ post.id }}').data('action', 'like')
+                      // Изменяем цвет ссылки.
+                      $('#dislike_block{{ post.id }}').attr('class', previous_action == 'dislike' ? 'btn btn-danger float-right ml-2' : 'btn btn-secondary float-right ml-2');
+                      $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
+                      //$('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+                      // Обновляем общее количество лайков.
+                      var previous_dislikes = parseInt($('#dislike_val{{ post.id }}').text());
+                      $('#dislike_val{{ post.id }}').text(previous_action == 'dislike' ? previous_dislikes + 1 : previous_dislikes - 1);
+                      var previous_likes = parseInt($('#like_val{{ post.id }}').text());
+                      $('#like_val{{ post.id }}').text(like_previous_action == 'unlike' ? previous_likes - 1 : previous_likes );
                     }
-                  }
+                  });
                 });
-              });
             </script>
         {% endfor %}
         </div>

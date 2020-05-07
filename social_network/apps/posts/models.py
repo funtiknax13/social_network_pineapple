@@ -8,8 +8,12 @@ class Post(models.Model):
     post_text = models.TextField('Текст поста')
     post_image = models.ImageField('Изображение поста', blank = True, upload_to = 'images/post/')
     post_time = models.DateTimeField('Время создания')
-    post_like = models.IntegerField('Лайк', default = 0)
-    post_dislike = models.IntegerField('Дизлайк', default = 0)
+    post_like = models.ManyToManyField(User,
+                                        related_name='post_liked',
+                                        blank=True)
+    post_dislike = models.ManyToManyField(User,
+                                        related_name='post_disliked',
+                                        blank=True)
 
     def __str__(self):
         return str(self.author)

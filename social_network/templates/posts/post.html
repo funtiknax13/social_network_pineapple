@@ -1,45 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load thumbnail %}
-{% block title %} Все новости {% endblock %}
+{% block title %}
+  {% if post.post_title %}
+    {{ post.post_title }}
+  {% else %}
+    {{ post.post_text|truncatewords_html:4 }}
+  {% endif %}
+{% endblock %}
 {% block style %}
 <link href="{% static 'css/posts/post_columns.css' %}" rel="stylesheet">
+<link href="{% static 'css/posts/post.css' %}" rel="stylesheet">
 <style media="screen">
-  textarea{
-    display:block;
-    width:75%;
-    height:50px;
-    padding:.375rem .75rem;
-    font-size:1rem;
-    font-weight:400;
-    color:#495057;
-    background-color:#fff;
-    background-clip:padding-box;
-    border:1px solid #ced4da;
-    border-radius:.25rem;
-    transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out
-  }
-  input[type = submit]{
-    display:block;
-    width:25%;
-    height:50px;
-  }
-  .my-card-img-top{
-    max-width: 100%;
-    max-height: 70vh;
-    width:auto;
-    height: auto;
-    margin: auto;
-  }
-  hr {
-    margin: -30px auto 10px;
-  	padding: 0;
-  	height: 50px;
-  	border: none;
-  	border-bottom: 1px solid #fff;
-  	box-shadow: 0 20px 20px -20px #333;
-  	width: 100%;
-  }
+
 </style>
 {% endblock %}
 
@@ -51,14 +24,16 @@
         <div class="card mt-2 text-white bg-dark">
             <div class="card-header wordwrap textowerflow">
                 <a href="{% url 'account:account' post.author.id %}" class="text-white">{{ post.author.first_name }} {{ post.author.last_name }}</a>
-                <a class="close" href="{% url 'posts:back' %}">
+                <a class="close" href="{% url 'posts:back' %}" title="Назад">
                   <span aria-hidden="true">&times;</span>
                 </a>
             </div>
+            {% with total_likes=post.post_like.count users_like=post.post_like.all total_dislikes=post.post_dislike.count users_dislike=post.post_dislike.all%}
+
             {% if post.post_image %}
               <img class="my-card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
             {% endif %}
-              <div class="card-body wordwrap textowerflow">
+              <div class="card-body">
               {% if post.post_title %}
                 <h4 class="card-title">{{ post.post_title }}</h4>
               {% endif %}
@@ -67,134 +42,176 @@
                 <strong><time>{{ post.post_time }}</time></strong>
               </p>
               <p>
-                  <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-secondary float-left ml-2">
-                  <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
-                  <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
-                </a>
-                <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                  <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
-                  <strong id="dislike_val{{ post.id }}">{{post.post_dislike}}</strong>
-                </a>
-                <a href="#" id="like_block{{ post.id }}"  class="btn btn-secondary float-right ml-2">
-                  <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
-                  <strong id="like_val{{ post.id }}">{{post.post_dislike}}</strong>
-                </a>
+                {% if post.post_comments.count > 0 %}
+                  <a href="{% url 'posts:post' post.id %}" id="comment_sym{{ post.id }}"  class="btn btn-info float-left mr-2">
+                    <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                    <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                  </a>
+                {% else %}
+                  <a href="{% url 'posts:post' post.id %}" id="comment_sym{{ post.id }}"  class="btn btn-secondary float-left mr-2">
+                    <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">
+                    <strong id="comment_val{{ post.id }}">{{post.post_comments.count}}</strong>
+                  </a>
+                {% endif %}
+
+                {% if request.user in users_dislike %}
+                  <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-danger float-right ml-2" data-action="undislike" data-id="{{ post.id }}">
+                    <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
+                    <strong id="dislike_val{{ post.id }}">{{total_dislikes}}</strong>
+                  </a>
+                {% else %}
+                  <a href="#" id="dislike_block{{ post.id }}"  class="btn btn-secondary float-right ml-2" data-action="dislike" data-id="{{ post.id }}">
+                    <img id="dislike_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/dislike.png" alt="dislike" width="20px">
+                    <strong id="dislike_val{{ post.id }}">{{total_dislikes}}</strong>
+                  </a>
+                {% endif %}
+
+                {% if request.user in users_like %}
+                  <a href="#" id="like_block{{ post.id }}" class="btn btn-success float-right ml-2" data-action="unlike" data-id="{{ post.id }}">
+                    <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                    <strong id="like_val{{ post.id }}">{{total_likes}}</strong>
+                  </a>
+                {% else %}
+                  <a href="#" id="like_block{{ post.id }}" class="btn btn-secondary float-right ml-2" data-action="like" data-id="{{ post.id }}">
+                    <img id="like_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/like.png" alt="like" width="20px">
+                    <strong id="like_val{{ post.id }}">{{total_likes}}</strong>
+                  </a>
+                {% endif %}
                 <br>
               </p>
             </div>
+            {% endwith %}
             <hr>
             <div class="card-comment p-3">
-              <form action="{% url 'posts:leave_comment' post.id %}" method="post" class="form-inline mb-3">
+              <form id="leave_comment" enctype="multipart/form-data" class="form-inline mb-3">
                 {% csrf_token %}
-                <textarea name="text"></textarea>
-                <input type="submit" name="leave_comment" value="Отправить" class="btn btn-primary">
+                <textarea name="text" id="comment_text"></textarea>
+                <input type="submit" name="leave_comment" id="leave_comment_submit" value="Отправить" class="btn btn-primary">
               </form>
-              {% for comment in post.post_comments.all %}
-               {% if comment.comment_author == request.user %}
-                  <div class="media w-100 bg-success mb-3 p-1 rounded">
-                    <a href="{% url 'account:account' comment.comment_author.id %}">
-                     <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}">
-                  </a>
-                    <div class="media-body wordwrap textowerflow">
-                      <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
-                      {{comment.comment_text|linebreaks|urlizetrunc:30}}
-                      <a href="{% url 'posts:delete_comment' post.id comment.id %}" class="btn btn-primary float-right mb-1 mr-1" >Удалить</a>
+              <div id="comment_block">
+                {% for comment in post.post_comments.all %}
+                 {% if comment.comment_author == request.user %}
+                    <div class="media w-100 bg-success mb-3 p-1 rounded" id="comment{{comment.id}}">
+                      <a href="{% url 'account:account' comment.comment_author.id %}">
+                       <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}">
+                    </a>
+                      <div class="media-body wordwrap textowerflow">
+                        <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
+                        {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                        <a href="#" class="delete_comment btn btn-primary float-right mb-1 mr-1" data-id="comment{{comment.id}}" data-action="{{comment.id}}" >Удалить</a>
+                      </div>
                     </div>
-                  </div>
-                {% else %}
-                  <div class="media w-100 bg-secondary mb-3 p-1 rounded">
-                    <a href="{% url 'account:account' comment.comment_author.id %}">
-                    <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}"></a>
-                    <div class="media-body wordwrap textowerflow">
-                      <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
-                      {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                  {% else %}
+                    <div class="media w-100 bg-secondary mb-3 p-1 rounded">
+                      <a href="{% url 'account:account' comment.comment_author.id %}">
+                      <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}"></a>
+                      <div class="media-body wordwrap textowerflow">
+                        <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
+                        {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                      </div>
                     </div>
-                  </div>
-                {% endif %}
-              {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              </div>
             </div>
           </div>
 
           <script type="text/javascript">
-            $.ajax({
-                url: "{% url 'posts:user_like' post.id %}",
-                type: 'GET',
-                data: {'check': true},
 
-                success: function (json) {
-                    if (json.result) {
-                      var like = json.like;
-                      var dislike = json.dislike;
-                      if (json.user_like) {
-                        if (json.user_like_val == "like"){
-                          $('#like_val{{ post.id }}').text(like);
-                          $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
-                          $('#dislike_val{{ post.id }}').text(dislike);
-                        } else {
-                          $('#like_val{{ post.id }}').text(like);
-                          $('#dislike_val{{ post.id }}').text(dislike);
-                          $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
+            $('#like_block{{ post.id }}').on('click', function(e){
+              e.preventDefault();
+              $.post(
+                '{% url "posts:like_or_dislike" %}',
+                {id: $(this).data('id'),action: $(this).data('action')},
+                function(data){
+                  if (data['status'] == 'ok'){
+                    var previous_action = $('#like_block{{ post.id }}').data('action');
+                    var dislike_previous_action = $('#dislike_block{{ post.id }}').data('action');
+                    // Изменяем переменную действия.
+                    $('#like_block{{ post.id }}').data('action', previous_action == 'like' ?'unlike' : 'like');
+                    $('#dislike_block{{ post.id }}').data('action', 'dislike')
+                    // Изменяем цвет ссылки.
+                    $('#like_block{{ post.id }}').attr('class', previous_action == 'like' ? 'btn btn-success float-right ml-2' : 'btn btn-secondary float-right ml-2');
+                    $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
+                    // Обновляем общее количество лайков.
+                    var previous_likes = parseInt($('#like_val{{ post.id }}').text());
+                    $('#like_val{{ post.id }}').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                    var previous_dislikes = parseInt($('#dislike_val{{ post.id }}').text());
+                    $('#dislike_val{{ post.id }}').text(dislike_previous_action == 'undislike' ? previous_dislikes - 1 : previous_dislikes );
+                  }
+                });
+              });
+
+              $('#dislike_block{{ post.id }}').on('click', function(e){
+                e.preventDefault();
+                $.post(
+                  '{% url "posts:like_or_dislike" %}',
+                  {id: $(this).data('id'),action: $(this).data('action')},
+                  function(data){
+                    if (data['status'] == 'ok'){
+                      var previous_action = $('#dislike_block{{ post.id }}').data('action');
+                      var like_previous_action = $('#like_block{{ post.id }}').data('action');
+                      // Изменяем переменную действия.
+                      $('#dislike_block{{ post.id }}').data('action', previous_action == 'dislike' ?'undislike' : 'dislike');
+                      $('#like_block{{ post.id }}').data('action', 'like')
+                      // Изменяем цвет ссылки.
+                      $('#dislike_block{{ post.id }}').attr('class', previous_action == 'dislike' ? 'btn btn-danger float-right ml-2' : 'btn btn-secondary float-right ml-2');
+                      $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
+                      //$('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+                      // Обновляем общее количество лайков.
+                      var previous_dislikes = parseInt($('#dislike_val{{ post.id }}').text());
+                      $('#dislike_val{{ post.id }}').text(previous_action == 'dislike' ? previous_dislikes + 1 : previous_dislikes - 1);
+                      var previous_likes = parseInt($('#like_val{{ post.id }}').text());
+                      $('#like_val{{ post.id }}').text(like_previous_action == 'unlike' ? previous_likes - 1 : previous_likes );
+                    }
+                  });
+                });
+
+                $('a.delete_comment').on('click', function(e){
+                   e.preventDefault();
+                   var delete_comment = $(this).data('id');
+                   var comment_id = parseInt($(this).data('action'));
+                   $.get(
+                     '/comment'+comment_id+'/delete',
+                     function(data){
+                       if (data['status'] == 'ok'){
+                         $('#'+delete_comment).remove();
+                         var previous_comment_count = parseInt($('#comment_val{{ post.id }}').text());
+                         $('#comment_val{{ post.id }}').text(previous_comment_count - 1);
+                         $('#comment_sym{{ post.id }}').attr('class', previous_comment_count == 1 ? 'btn btn-secondary float-left mr-2' : 'btn btn-info float-left mr-2');
                         }
-                      } else {
-                        $('#like_val{{ post.id }}').text(like);
-                        $('#dislike_val{{ post.id }}').text(dislike);
-                      }
-                    }
-                }
-            });
+                     });
+                 });
 
-              $('#like_block{{ post.id }}').on('click', function(e) {
-                e.preventDefault();
-               $.ajax({
-                  type:'GET',
-                  url:"{% url 'posts:like_or_dislike' post.id 'like' %}",
-                  data: {'check': true},
-                  success:function (json) {
-                      if (json.result) {
-                          var like = json.like;
-                          var dislike = json.dislike;
-                          if (json.user_like) {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-success float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                          } else {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
+                $(document).on('submit', '#leave_comment', function(e){
+                  e.preventDefault();
+
+                  var comment_text = $('#comment_text').val();
+                  if (comment_text != ''){
+                     $('#comment_text').val('');
+                     // $('#leave_comment_submit').value('loading');
+                     $.ajax({
+                      type:'POST',
+                      url:'{% url "posts:leave_comment" post.id %}',
+                      data:{
+                        comment_text:comment_text,
+                        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                      },
+
+                      success:function (json) {
+                          if (json.result) {
+                            var doc = $.parseHTML(json.comment);
+                            $('#comment_block').append(doc);
+                            var previous_comment_count = parseInt($('#comment_val{{ post.id }}').text());
+                            $('#comment_val{{ post.id }}').text(previous_comment_count + 1);
+                            $('#comment_sym{{ post.id }}').attr('class', 'btn btn-info float-left mr-2');
+                            $(document).scrollTop(9999);
                           }
-                    }
-                  }
-                });
-              });
+                        }
+                      });
+                    };
+                  });
 
-              $('#dislike_block{{ post.id }}').on('click', function(e) {
-                e.preventDefault();
-               $.ajax({
-                  type:'GET',
-                  url:"{% url 'posts:like_or_dislike' post.id 'dislike' %}",
-                  data: {'check': true},
-                  success:function (json) {
-                      if (json.result) {
-                          var like = json.like;
-                          var dislike = json.dislike;
-                          if (json.user_like) {
-                              $('#like_val{{ post.id }}').text(like);
-                              $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                              $('#dislike_val{{ post.id }}').text(dislike);
-                              $('#dislike_block{{ post.id }}').attr('class', 'btn btn-danger float-right ml-2');
-                            } else {
-                            $('#like_val{{ post.id }}').text(like);
-                            $('#like_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                            $('#dislike_val{{ post.id }}').text(dislike);
-                            $('#dislike_block{{ post.id }}').attr('class', 'btn btn-secondary float-right ml-2');
-                          }
-
-                    }
-                  }
-                });
-              });
             </script>
       </div>
 
