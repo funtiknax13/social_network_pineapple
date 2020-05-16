@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
-from .models import Friend
+from .models import Friend, Follower
 from posts.forms import PostForm
 from posts.models import Post
 from django.utils import timezone
@@ -171,6 +171,11 @@ def account(request, account_id):
     else:
         is_friend = True
 
+    if Follower.objects.filter(user = request.user, follower_for = user):
+        is_follower = False
+    else:
+        is_follower = True
+
     users_friends1 = Friend.objects.filter(user = user, confirmed = True)#[:6]
     users_friends2 = Friend.objects.filter(users_friend = user, confirmed = True)#[:6-len(users_friends1)]
 
@@ -183,18 +188,31 @@ def account(request, account_id):
       post_list = paginator.page(1)
     except EmptyPage:
       post_list = paginator.page(paginator.num_pages)
-    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2}
+    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2, 'is_follower': is_follower}
     return render(request, 'account/id.html', context)
 
-#
-# @login_required(login_url = '/')
-# def other_user_friends(request, account_id):
-#     try:
-#         user = User.objects.get(id = account_id)
-#     except:
-#         raise Http404("Пользователь не найден!")
-#
-#     users_friends1 = Friend.objects.filter(user = user, confirmed = True)
-#     users_friends2 = Friend.objects.filter(users_friend = user, confirmed = True)
-#     context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2}
-#     return render(request, 'account/id.html', context)
+
+@login_required(login_url = '/')
+def add_follower(request, account_id):
+    try:
+        user = User.objects.get(id = account_id)
+    except:
+        raise Http404("Пользователь не найден!")
+
+    is_follower = Follower.objects.filter(user = request.user, follower_for = user)
+    if not is_follower:
+        add_follower = Follower(user = request.user, follower_for = user)
+        add_follower.save()
+    return HttpResponseRedirect(reverse('account:account', args = (account_id, )))
+
+
+@login_required(login_url = '/')
+def delete_follower(request, account_id):
+    try:
+        user = User.objects.get(id = account_id)
+    except:
+        raise Http404("Пользователь не найден!")
+
+    follower = Follower.objects.filter(user = request.user, follower_for = user)
+    follower.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .models import Post, Like, Comment
-from account.models import Friend
+from account.models import Friend, Follower
 import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import PostForm
@@ -18,7 +18,8 @@ def delete_post(request, post_id):
         post = Post.objects.get(id = post_id)
     except:
         raise Http404("Пост не найден!")
-    post.delete()
+    if post.author == request.user:
+        post.delete()
     return HttpResponseRedirect(reverse('account:user_account'))
 
 
@@ -29,23 +30,26 @@ def edit_post(request, post_id):
     except:
         raise Http404("Пост не найден!")
 
-    if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES, instance=post)
-        if form.is_valid():
-            post.post_title = form.cleaned_data['post_title']
-            post.post_text = form.cleaned_data['post_text']
-            image = form.cleaned_data['post_image']
-            if image:
-                post.post_image = image
-            else:
-                post.post_image = ''
-            post.save()
+    if post.author == request.user:
+        if request.method == 'POST':
+            form = PostForm(request.POST, request.FILES, instance=post)
+            if form.is_valid():
+                post.post_title = form.cleaned_data['post_title']
+                post.post_text = form.cleaned_data['post_text']
+                image = form.cleaned_data['post_image']
+                if image:
+                    post.post_image = image
+                else:
+                    post.post_image = ''
+                post.save()
 
-            return HttpResponseRedirect(reverse('account:user_account'))
+                return HttpResponseRedirect(reverse('account:user_account'))
+        else:
+            form = PostForm(instance=post)
+        context = {'form': form, "post": post}
+        return render(request, 'posts/edit_post.html', context)
     else:
-        form = PostForm(instance=post)
-    context = {'form': form, "post": post}
-    return render(request, 'posts/edit_post.html', context)
+        return HttpResponseRedirect(reverse('account:user_account'))
 
 
 @login_required(login_url = '/')
@@ -85,7 +89,7 @@ def friend_news(request):
     posts = Post.objects.all().exclude(author = request.user).order_by("-post_time")
     friend_post = []
     for post in posts:
-        if Friend.objects.filter(user = request.user, users_friend = post.author, confirmed = True)|Friend.objects.filter(user = post.author, users_friend = request.user, confirmed = True):
+        if Friend.objects.filter(user = request.user, users_friend = post.author, confirmed = True)|Friend.objects.filter(user = post.author, users_friend = request.user, confirmed = True) or Follower.objects.filter(user = request.user, follower_for = post.author):
             friend_post.append(post)
     page = request.GET.get('page', 1)
     paginator = Paginator(friend_post, 20)
@@ -96,7 +100,8 @@ def friend_news(request):
     except EmptyPage:
       post_list = paginator.page(paginator.num_pages)
 
-    context = {'posts': post_list}
+    follow_list = Follower.objects.filter(user = request.user)
+    context = {'posts': post_list, 'follow_list': follow_list}
     return render(request, 'posts/friend_news.html', context)
 
 
@@ -181,8 +186,11 @@ def delete_comment(request, comment_id):
         comment = Comment.objects.get(id = comment_id)
     except:
         raise Http404("Комментарий не найден!")
-    comment.delete()
-    return JsonResponse({'status':'ok'})
+    if comment.comment_author == request.user:
+        comment.delete()
+        return JsonResponse({'status':'ok'})
+    else:
+        return JsonResponse({'status':'no'})
 
 
 def back(request):

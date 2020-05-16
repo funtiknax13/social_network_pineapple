@@ -31,7 +31,15 @@
            <li><a href="{% url 'dialogs:dialog' other_user.username %}">Написать</a></li>
            {% if is_friend %}
             <li><a href="{% url 'account:add_friend' other_user.id %}">Добавить в друзья</a></li>
+            {% if is_follower %}
+              <li><a href="{% url 'account:add_follower' other_user.id %}">Подписаться</a></li>
+            {% else %}
+              <li><a href="{% url 'account:delete_follower' other_user.id %}">Отписаться</a></li>
+            {% endif%}
+           {% else %}
+           <li><a href="{% url 'account:delete_friend' other_user.id %}">Удалить из друзей</a></li>
            {% endif %}
+
          </ul>
        </div>
        <div class="category-wrap">
@@ -56,7 +64,7 @@
        </div>
 
      <div class="col-md-8 text-left">
-       <div class="card-columns">
+       <div class="card-columns pt-2">
         {% for post in user_posts %}
         <div class="card mb-2 mt-2 text-white bg-dark">
 
@@ -64,6 +72,9 @@
 
           {% if post.post_image %}
             <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+          {% endif %}
+          {% if post.post_image_url %}
+            <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
           {% endif %}
             <div class="card-body">
             {% if post.post_title %}

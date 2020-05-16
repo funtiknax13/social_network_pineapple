@@ -33,6 +33,9 @@
             {% if post.post_image %}
               <img class="my-card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
             {% endif %}
+            {% if post.post_image_url %}
+              <img class="my-card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
+            {% endif %}
               <div class="card-body">
               {% if post.post_title %}
                 <h4 class="card-title">{{ post.post_title }}</h4>

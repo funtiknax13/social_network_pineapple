@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('account.urls')),
     path('', include('dialogs.urls')),
     path('', include('posts.urls')),
+    path('', include('bots.urls')),
 
 ]
 

@@ -69,7 +69,7 @@
       </script>
 
       <div class="col-md-8 text-left">
-        <div class="card-columns">
+        <div class="card-columns pt-2">
         {% for post in user_posts %}
           <div class="card mb-2 mt-2 text-white bg-dark">
 
@@ -77,6 +77,9 @@
 
             {% if post.post_image %}
               <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+            {% endif %}
+            {% if post.post_image_url %}
+              <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
             {% endif %}
               <div class="card-body">
               {% if post.post_title %}

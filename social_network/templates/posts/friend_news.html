@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %} Новости {% endblock %}
 {% block style %}
+<link href="{% static 'css/account/id.css' %}" rel="stylesheet">
 <link href="{% static 'css/posts/post_columns.css' %}" rel="stylesheet">
 <link href="{% static 'css/posts/post_img.css' %}" rel="stylesheet">
 {% endblock %}
@@ -15,8 +16,21 @@
           <ul>
             <li><a href="{% url 'posts:news' %}">Все новости</a></li>
             <li><a href="{% url 'posts:like_news' %}">Понравившиеся</a></li>
-            <li class="active"><a href="{% url 'posts:friend_news' %}">Новости друзей</a></li>
+            <li class="active"><a href="{% url 'posts:friend_news' %}">Ваши новости</a></li>
           </ul>
+        </div>
+        <div class="category-wrap">
+          <h6>Подписки</h6>
+          <div>
+            {% for follow_user in follow_list %}
+              <div class="friend_block">
+                <strong class="card-title wordwrap textowerflow"><a href="{% url 'account:account' follow_user.follower_for.id %}">
+                {{ follow_user.follower_for.first_name }} {{ follow_user.follower_for.last_name }}</a></strong>
+                <a href="{% url 'account:account' follow_user.follower_for.id %}"><img src="{{ follow_user.follower_for.profile.avatar.url }}" alt="{{ follow_user.follower_for.first_name }}" class="rounded-circle w-100"></a>
+                <a href="{% url 'account:delete_follower' follow_user.follower_for.id %}" class="text-primary">Отписаться</a>
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
 
@@ -31,6 +45,9 @@
 
             {% if post.post_image %}
               <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+            {% endif %}
+            {% if post.post_image_url %}
+              <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
             {% endif %}
               <div class="card-body">
               {% if post.post_title %}

@@ -14,7 +14,7 @@
           <ul>
             <li><a href="{% url 'posts:news' %}">Все новости</a></li>
             <li class="active"><a href="{% url 'posts:like_news' %}">Понравившиеся</a></li>
-            <li><a href="{% url 'posts:friend_news' %}">Новости друзей</a></li>
+            <li><a href="{% url 'posts:friend_news' %}">Ваши новости</a></li>
           </ul>
         </div>
       </div>
@@ -30,6 +30,9 @@
 
               {% if post.post_image %}
                 <img class="card-img-top" src="{{ post.post_image.url }}" alt="{{ post.post_title }}">
+              {% endif %}
+              {% if post.post_image_url %}
+                <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
               {% endif %}
                 <div class="card-body">
                 {% if post.post_title %}

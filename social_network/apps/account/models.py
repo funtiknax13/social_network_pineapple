@@ -50,3 +50,15 @@ class Friend(models.Model):
     class Meta:
         verbose_name = 'Друг'
         verbose_name_plural = 'Друзья'
+
+
+class Follower(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    follower_for = models.ForeignKey(User, related_name = 'follower_for', on_delete = models.CASCADE)
+
+    def __str__(self):
+        return str(self.user)
+
+    class Meta:
+        verbose_name = 'Подписчик'
+        verbose_name_plural = 'Подписчики'

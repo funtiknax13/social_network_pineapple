@@ -7,6 +7,7 @@ class Post(models.Model):
     post_title = models.CharField('Заголовок', max_length = 150, blank = True)
     post_text = models.TextField('Текст поста')
     post_image = models.ImageField('Изображение поста', blank = True, upload_to = 'images/post/')
+    post_image_url = models.ImageField('URL изображения поста', blank = True)
     post_time = models.DateTimeField('Время создания')
     post_like = models.ManyToManyField(User,
                                         related_name='post_liked',
