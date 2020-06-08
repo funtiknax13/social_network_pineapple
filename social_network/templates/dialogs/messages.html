@@ -44,43 +44,69 @@
      {% endif %}
      {% for message in messages %}
          {% if message.sender == request.user %}
-         <a href="{% url 'dialogs:dialog' message.reciever.username %}">
-           <div class="media bg-secondary mt-3 p-2 rounded">
-             <img class="d-flex mr-3 mes-img" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
-             <div class="media-body wordwrap textowerflow">
-               <h5 class="mt-0 wordwrap textowerflow"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
-                 <time class="float-right">{{message.message_time}}</time></h5>
-               {{message.message_text|linebreaks|truncatewords_html:25}}
+           <a href="{% url 'dialogs:dialog' message.reciever.username %}" id="dialog{{message.reciever.id}}">
+             <div class="media bg-secondary mt-3 p-2 rounded">
+               <img class="d-flex mr-3 mes-img" src="{{ message.reciever.profile.avatar.url }}" width="50px" alt="{{ message.reciever.first_name }}" >
+               <div class="media-body wordwrap textowerflow">
+                 <h5 class="mt-0 wordwrap textowerflow"><strong>{{ message.reciever.first_name }} {{message.reciever.last_name}}</strong>
+                   <time class="float-right">{{message.message_time}}</time></h5>
+                   <div class="wordwrap textowerflow">
+                     {{message.message_text|linebreaks|truncatewords_html:25}}
+                   </div>
+                   <button type="button" name="button" class="delete_dialog btn btn-sm btn-primary float-right mb-1 mr-1" data-id="dialog{{message.reciever.id}}" data-action="{{message.reciever.id}}">Удалить диалог</button>
+               </div>
              </div>
-           </div>
-          </a>
+            </a>
          {% else %}
           {% if not message.is_readed %}
-          <a href="{% url 'dialogs:dialog' message.sender.username %}">
-            <div class="media bg-info mt-3 p-2 rounded">
-              <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
-              <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
-                  <time class="float-right">{{message.message_time}}</time></h5>
-                  {{message.message_text|linebreaks|truncatewords_html:25}}
+            <a href="{% url 'dialogs:dialog' message.sender.username %}" id="dialog{{message.sender.id}}">
+              <div class="media bg-info mt-3 p-2 rounded">
+                <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
+                <div class="media-body wordwrap textowerflow">
+                  <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
+                    <time class="float-right">{{message.message_time}}</time></h5>
+                    <div class="wordwrap textowerflow">
+                      {{message.message_text|linebreaks|truncatewords_html:25}}
+                    </div>
+                    <button type="button" name="button" class="delete_dialog btn btn-sm btn-primary float-right mb-1 mr-1" data-id="dialog{{message.sender.id}}" data-action="{{message.sender.id}}">Удалить диалог</button>
+                </div>
               </div>
-            </div>
             </a>
           {% else %}
-          <a href="{% url 'dialogs:dialog' message.sender.username %}">
-            <div class="media bg-secondary mt-3 p-2 rounded">
-              <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
-              <div class="media-body wordwrap textowerflow">
-                <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
-                  <time class="float-right">{{message.message_time}}</time></h5>
-                  {{message.message_text|linebreaks|truncatewords_html:25}}
+            <a href="{% url 'dialogs:dialog' message.sender.username %}" id="dialog{{message.sender.id}}">
+              <div class="media bg-secondary mt-3 p-2 rounded">
+                <img class="d-flex mr-3 mes-img" src="{{ message.sender.profile.avatar.url }}" width="50px" alt="{{ message.sender.first_name }}" >
+                <div class="media-body wordwrap textowerflow">
+                  <h5 class="mt-0 wordwrap textowerflow">{{ message.sender.first_name }} {{message.sender.last_name}}
+                    <time class="float-right">{{message.message_time}}</time></h5>
+                    <div class="wordwrap textowerflow">
+                      {{message.message_text|linebreaks|truncatewords_html:25}}
+                    </div>
+                    <button type="button" name="button" class="delete_dialog btn btn-sm btn-primary float-right mb-1 mr-1" data-id="dialog{{message.sender.id}}" data-action="{{message.sender.id}}">Удалить диалог</button>
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
           {% endif %}
          {% endif %}
        {% endfor %}
      </div>
    </div>
  </div>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+ <script type="text/javascript">
+      $('button.delete_dialog').on('click', function(e){
+         e.preventDefault();
+         var delete_dialog = $(this).data('id');
+         var companion_id = parseInt($(this).data('action'));
+         $.get(
+           '/dialog'+companion_id+'/delete',
+           function(data){
+             if (data['status'] == 'ok'){
+               $('#'+delete_dialog).remove();
+              }
+           });
+       });
+   </script>
+
 {% endblock %}

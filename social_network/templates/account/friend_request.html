@@ -43,6 +43,11 @@
                   {{ not_confirmed_friend.user.profile.city}}
                 {% endif %}
               </p>
+              {% if not_confirmed_friend.user.status.online %}
+                {% if not_confirmed_friend.user.status.get_online_status == 'Онлайн' %}
+                  <p class="text-primary">{{ not_confirmed_friend.user.status.get_online_status }}</p>
+                {% endif %}
+              {% endif %}
               <a class="card-link" href="{% url 'account:confirm_friend' not_confirmed_friend.user.id %}">Подтвердить</a>
               <a class="card-link" href="{% url 'account:delete_friend' not_confirmed_friend.user.id %}">Отклонить</a>
             </div>

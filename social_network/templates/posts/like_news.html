@@ -35,13 +35,16 @@
                 <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
               {% endif %}
                 <div class="card-body">
-                {% if post.post_title %}
-                  <h4 class="card-title">{{ post.post_title }}</h4>
-                {% endif %}
-                <p class="card-text">
-                  {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
-                  <strong><time>{{ post.post_time }}</time></strong>
-                </p>
+                  <div class="wordwrap textowerflow">
+                    {% if post.post_title %}
+                      <h4 class="card-title">{{ post.post_title }}</h4>
+                    {% endif %}
+                    <p class="card-text">
+                      {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+
+                    </p>
+                  </div>
+                <strong><time>{{ post.post_time }}</time></strong>
                 <p>
                   {% if post.post_comments.count > 0 %}
                     <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-info float-left mr-2">

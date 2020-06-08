@@ -29,6 +29,7 @@ def user_account(request):
             return HttpResponseRedirect(request.path)
     else:
         form = PostForm()
+
     user_posts = Post.objects.filter(author = user).order_by("-post_time")
     page = request.GET.get('page', 1)
     paginator = Paginator(user_posts, 10)
@@ -38,7 +39,9 @@ def user_account(request):
       post_list = paginator.page(1)
     except EmptyPage:
       post_list = paginator.page(paginator.num_pages)
-    context = {'user': user, 'form':form, 'user_posts': post_list}
+
+    followers = Follower.objects.filter(follower_for = request.user)
+    context = {'user': user, 'form':form, 'user_posts': post_list, 'followers': followers}
     return render(request, 'account/account.html', context)
 
 #Изменение аватара пользователя
@@ -188,7 +191,9 @@ def account(request, account_id):
       post_list = paginator.page(1)
     except EmptyPage:
       post_list = paginator.page(paginator.num_pages)
-    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2, 'is_follower': is_follower}
+
+    user_following = Follower.objects.filter(user = user)
+    context = {'other_user': user, 'user_posts': post_list, 'is_friend': is_friend, "friends1": users_friends1, "friends2": users_friends2, 'is_follower': is_follower, 'user_following': user_following}
     return render(request, 'account/id.html', context)
 
 

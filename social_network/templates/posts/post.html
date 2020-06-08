@@ -37,13 +37,16 @@
               <img class="my-card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
             {% endif %}
               <div class="card-body">
-              {% if post.post_title %}
-                <h4 class="card-title">{{ post.post_title }}</h4>
-              {% endif %}
-              <p class="card-text">
-                {{ post.post_text|linebreaks|urlizetrunc:30 }}
-                <strong><time>{{ post.post_time }}</time></strong>
-              </p>
+                <div class="wordwrap textowerflow">
+                  {% if post.post_title %}
+                    <h4 class="card-title">{{ post.post_title }}</h4>
+                  {% endif %}
+                  <p class="card-text">
+                    {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+
+                  </p>
+                </div>
+              <strong><time>{{ post.post_time }}</time></strong>
               <p>
                 {% if post.post_comments.count > 0 %}
                   <a href="{% url 'posts:post' post.id %}" id="comment_sym{{ post.id }}"  class="btn btn-info float-left mr-2">
@@ -98,19 +101,23 @@
                       <a href="{% url 'account:account' comment.comment_author.id %}">
                        <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}">
                     </a>
-                      <div class="media-body wordwrap textowerflow">
+                      <div class="media-body">
                         <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
-                        {{comment.comment_text|linebreaks|urlizetrunc:30}}
-                        <a href="#" class="delete_comment btn btn-primary float-right mb-1 mr-1" data-id="comment{{comment.id}}" data-action="{{comment.id}}" >Удалить</a>
+                        <div class="wordwrap textowerflow">
+                          {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                        </div>
+                        <a href="#" class="delete_comment btn btn-sm btn-primary float-right mb-1 mr-1" data-id="comment{{comment.id}}" data-action="{{comment.id}}" >Удалить</a>
                       </div>
                     </div>
                   {% else %}
                     <div class="media w-100 bg-secondary mb-3 p-1 rounded">
                       <a href="{% url 'account:account' comment.comment_author.id %}">
                       <img class="d-flex mr-3 rounded-circle" src="{{ comment.comment_author.profile.avatar.url }}" width="40px" alt="{{ comment.comment_author.first_name }}"></a>
-                      <div class="media-body wordwrap textowerflow">
+                      <div class="media-body">
                         <h6 class="mt-0 wordwrap textowerflow">{{comment.comment_author.first_name}} {{comment.comment_author.last_name}} <time class="float-right">{{comment.comment_pubdate}}</time></h6>
-                        {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                        <div class="wordwrap textowerflow">
+                          {{comment.comment_text|linebreaks|urlizetrunc:30}}
+                        </div>
                       </div>
                     </div>
                   {% endif %}

@@ -1,14 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from .models import Message
-from account.models import Friend
+from account.models import Friend, Status
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import json
+import datetime
 
 #Запрос новых сообщений
 @login_required(login_url = '/')
@@ -39,8 +40,8 @@ def post(request, username):
 @login_required(login_url = '/')
 def dialog(request, username):
     companion = User.objects.get(username = username)
-    messages = (Message.objects.filter(sender = request.user, reciever = companion) | Message.objects.filter(reciever = request.user, sender = companion)).order_by("-message_time")[:20]
-    messages2 = (Message.objects.filter(sender = request.user, reciever = companion) | Message.objects.filter(reciever = request.user, sender = companion)).order_by("-message_time")[20:]
+    messages = (Message.objects.filter(sender = request.user, reciever = companion, sender_visibility = True) | Message.objects.filter(reciever = request.user, sender = companion, reciever_visibility = True)).order_by("-message_time")[:20]
+    messages2 = (Message.objects.filter(sender = request.user, reciever = companion, sender_visibility = True) | Message.objects.filter(reciever = request.user, sender = companion, reciever_visibility = True)).order_by("-message_time")[20:]
     not_readed_messages = Message.objects.filter(reciever = request.user, sender = companion, is_readed = False)
     for message in not_readed_messages:
         message.is_readed = True
@@ -55,6 +56,8 @@ def dialog(request, username):
 def new_messages(request):
     messages = Message.objects.filter(reciever = request.user, is_readed = False)
     new_friends = Friend.objects.filter(users_friend = request.user, confirmed = False)
+    status_for_update = {'online':timezone.now()}
+    user_status, created = Status.objects.update_or_create(user = request.user, defaults = status_for_update)
     if messages or new_friends:
         return HttpResponse(
             json.dumps({
@@ -68,6 +71,7 @@ def new_messages(request):
             json.dumps({
                 "result": False,
             }), content_type="application/json")
+
 
 #Отправка сообщения
 @login_required(login_url = '/')
@@ -97,11 +101,56 @@ def leave_message(request, reciever_name):
             }),
             content_type="application/json")
 
+#Удаление сообщения
+@login_required(login_url = '/')
+def delete_message(request, message_id):
+    try:
+        message = Message.objects.get(id = message_id)
+    except:
+        raise Http404("Сообщение не найдено!")
+    if message.sender == request.user:
+        message.sender_visibility = False
+        if not message.reciever_visibility:
+            message.delete()
+        else:
+            message.save()
+    else:
+        message.reciever_visibility = False
+        if not message.sender_visibility:
+            message.delete()
+        else:
+            message.save()
+    return JsonResponse({'status':'ok'})
+
+
+def delete_dialog(request, companion_id):
+    try:
+        companion = User.objects.get(id = companion_id)
+    except:
+        raise Http404("Собеседник не найден!")
+
+    send_messages = Message.objects.filter(sender = request.user, reciever = companion)
+    for message in send_messages:
+        message.sender_visibility = False
+        if not message.reciever_visibility:
+            message.delete()
+        else:
+            message.save()
+    reciever_messages = Message.objects.filter(reciever = request.user, sender = companion)
+    for message in reciever_messages:
+        message.reciever_visibility = False
+        if not message.sender_visibility:
+            message.delete()
+        else:
+            message.save()
+    return JsonResponse({'status':'ok'})
+
+
 
 #Вывод всех диалогов пользователя
 @login_required(login_url = '/')
 def messages(request):
-    messages = (Message.objects.filter(sender = request.user) | Message.objects.filter(reciever = request.user)).order_by("-message_time")
+    messages = (Message.objects.filter(sender = request.user, sender_visibility = True) | Message.objects.filter(reciever = request.user, reciever_visibility = True)).order_by("-message_time")
     users = []
     last_messages = []
     for message in messages:

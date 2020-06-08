@@ -35,6 +35,11 @@
           <div class="card-body">
             <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
             {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
+            {% if friend.users_friend.status.online %}
+              {% if friend.users_friend.status.get_online_status == 'Онлайн' %}
+                <p class="text-primary">{{ friend.users_friend.status.get_online_status }}</p>
+              {% endif %}
+            {% endif %}
             <a class="btn btn-primary" href="{% url 'account:delete_friend' friend.users_friend.id %}">Удалить из друзей</a>
           </div>
         </div>
@@ -45,6 +50,11 @@
           <div class="card-body">
             <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
             {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
+            {% if friend.user.status.online %}
+              {% if friend.user.status.get_online_status == 'Онлайн' %}
+                <p class="text-primary">{{ friend.user.status.get_online_status }}</p>
+              {% endif %}
+            {% endif %}
             <a class="btn btn-primary" href="{% url 'account:delete_friend' friend.user.id %}">Удалить из друзей</a>
           </div>
         </div>

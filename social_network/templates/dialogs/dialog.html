@@ -15,22 +15,32 @@
           {% endif %}
           {% for message in sort_messages %}
             {% if message.sender == request.user %}
-              <div class="media w-75 bg-secondary mb-3 p-1 rounded">
-                <a href="{% url 'account:user_account' %}">
-                <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
-                <div class="media-body wordwrap textowerflow">
-                  <h6 class="mt-0 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
-                  {{message.message_text|linebreaks|urlizetrunc:30}}
+                <div class="media w-75 bg-secondary mb-3 p-1 rounded" id='message{{message.id}}'>
+                  <a href="{% url 'account:user_account' %}">
+                  <img class="d-flex mr-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
+                  <div class="media-body">
+                    <h6 class="mt-0 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+                    <div class="wordwrap textowerflow">
+                      {{message.message_text|linebreaks|urlizetrunc:30}}
+                    </div>
+                    <a class="close delete_message pb-1" href="#" data-id="message{{message.id}}" data-action="{{message.id}}" title="Удалить">
+                      <span aria-hidden="true" class="text-danger m-1" >&times;</span>
+                    </a>
+                  </div>
                 </div>
-              </div>
             {% else %}
-              <div class="media w-75 float-right bg-success mb-3 mr-1 p-1 rounded">
-                <div class="media-body wordwrap textowerflow">
-                  <h6 class="mt-0 mb-1 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
-                  {{message.message_text|linebreaks|urlizetrunc:30}}
+                <div class="media w-75 float-right bg-success mb-3 mr-1 p-1 rounded" id='message{{message.id}}'>
+                  <div class="media-body">
+                    <h6 class="mt-0 mb-1 wordwrap textowerflow">{{message.sender.first_name}} {{message.sender.last_name}} <time class="float-right">{{message.message_time}}</time></h6>
+                    <div class="wordwrap textowerflow">
+                      {{message.message_text|linebreaks|urlizetrunc:30}}
+                    </div>
+                    <a class="close delete_message pb-1" href="#" data-id="message{{message.id}}" data-action="{{message.id}}" title="Удалить">
+                      <span aria-hidden="true" class="text-danger m-1" >&times;</span>
+                    </a>
+                  </div>
+                  <a href="{% url 'account:account' message.sender.id %}"><img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
                 </div>
-                <a href="{% url 'account:account' message.sender.id %}"><img class="d-flex ml-3" src="{{ message.sender.profile.avatar.url }}" width="40px" alt="{{ message.sender.first_name }}"></a>
-              </div>
             {% endif %}
           {% endfor %}
         </div>
@@ -47,6 +57,8 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script type="text/javascript">
+    window.onload = function(){ document.getElementById('message_block').scrollTop = 9999;}
+
     setInterval(function () {
           $.ajax({
               url: "{% url 'dialogs:post' friend.username %}",
@@ -62,8 +74,6 @@
               }
           });
       }, 1000);
-
-      window.onload = function(){ document.getElementById('message_block').scrollTop = 9999;}
 
       $(document).on('submit', '#leave_message', function(e){
         e.preventDefault();
@@ -109,5 +119,18 @@
         message_block.scrollTop(0);
         message_block.scrollTop(new_scrollHeight - scrollHeight);
        });
+
+       $('a.delete_message').on('click', function(e){
+          e.preventDefault();
+          var delete_message = $(this).data('id');
+          var message_id = parseInt($(this).data('action'));
+          $.get(
+            '/message'+message_id+'/delete',
+            function(data){
+              if (data['status'] == 'ok'){
+                $('#'+delete_message).remove();
+               }
+            });
+        });
     </script>
 {% endblock %}

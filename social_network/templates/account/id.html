@@ -26,6 +26,9 @@
            {{ other_user.profile.city}}
          {% endif %}
        </p>
+        {% if other_user.status.online %}
+          <p class="text-primary">{{ other_user.status.get_online_status }}</p>
+        {% endif %}
        <div class="category-wrap">
          <ul>
            <li><a href="{% url 'dialogs:dialog' other_user.username %}">Написать</a></li>
@@ -42,25 +45,37 @@
 
          </ul>
        </div>
-       <div class="category-wrap">
-         <h6>Друзья</h6>
-         <div>
-           {% for friend in friends1 %}
-             <div class="friend_block">
-               <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="rounded-circle w-100"></a>
-                 <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
-                 {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
-             </div>
-           {% endfor %}
-           {% for friend in friends2 %}
-             <div class="friend_block">
-               <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="rounded-circle w-100"></a>
-                 <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
-                 {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
-             </div>
-           {% endfor %}
+         <div class="category-wrap">
+           <h6>Друзья</h6>
+           <div>
+             {% for friend in friends1 %}
+               <div class="friend_block">
+                 <a href="{% url 'account:account' friend.users_friend.id %}"><img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}" class="rounded-circle w-100"></a>
+                   <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.users_friend.id %}">
+                   {{ friend.users_friend.first_name }} {{ friend.users_friend.last_name }}</a></h4>
+               </div>
+             {% endfor %}
+             {% for friend in friends2 %}
+               <div class="friend_block">
+                 <a href="{% url 'account:account' friend.user.id %}"><img src="{{ friend.user.profile.avatar.url }}" alt="{{ friend.user.username }}" class="rounded-circle w-100"></a>
+                   <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' friend.user.id %}">
+                   {{ friend.user.first_name }} {{ friend.user.last_name }}</a></h4>
+               </div>
+             {% endfor %}
+           </div>
          </div>
-       </div>
+         <div class="category-wrap">
+           <h6>Подписки</h6>
+           <div>
+             {% for follower in user_following %}
+               <div class="friend_block">
+                 <a href="{% url 'account:account' follower.follower_for.id %}"><img src="{{ follower.follower_for.profile.avatar.url }}" alt="{{ follower.follower_for.username }}" class="rounded-circle w-100"></a>
+                   <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' follower.follower_for.id %}">
+                   {{ follower.follower_for.first_name }} {{ follower.follower_for.last_name }}</a></h4>
+               </div>
+             {% endfor %}
+           </div>
+         </div>
        </div>
 
      <div class="col-md-8 text-left">
@@ -77,13 +92,16 @@
             <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
           {% endif %}
             <div class="card-body">
-            {% if post.post_title %}
-              <h4 class="card-title">{{ post.post_title }}</h4>
-            {% endif %}
-            <p class="card-text">
-              {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+              <div class="wordwrap textowerflow">
+                {% if post.post_title %}
+                  <h4 class="card-title">{{ post.post_title }}</h4>
+                {% endif %}
+                <p class="card-text">
+                  {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
+
+                </p>
+              </div>
               <strong><time>{{ post.post_time }}</time></strong>
-            </p>
             <p>
               {% if post.post_comments.count > 0 %}
                 <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-info float-left mr-2">

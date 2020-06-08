@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 def create_post(request):
     user = User.objects.get(username = 'bot')
     #token не работает, так как подкорректирован. У вас должен быть свой
-    token = 'f88de38bf88de38bf88de38bd3f8fc7a6fff88'
+    token = 'f88de38bf88de38bf88de38bd3f8fc7a6fff88df88de38ba620dc9725559b497361de40'
     version = 5.103
     domain = 'tproger'
 

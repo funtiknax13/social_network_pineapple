@@ -48,6 +48,11 @@
                     {{ user.profile.city}}
                   {% endif %}
                 </p>
+                {% if user.status.online %}
+                  {% if user.status.get_online_status == 'Онлайн' %}
+                    <p class="text-primary">{{ user.status.get_online_status }}</p>
+                  {% endif %}
+                {% endif %}
               </div>
             </div>
           {% endfor %}

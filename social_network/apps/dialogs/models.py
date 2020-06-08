@@ -9,9 +9,11 @@ class Message(models.Model):
     message_image = models.ImageField('Изображение', blank = True, upload_to = 'images/messages/')
     message_time = models.DateTimeField('Время отправления')
     is_readed = models.BooleanField('Прочитано', default=False)
+    sender_visibility = models.BooleanField('Отображение у отправителя', default=True)
+    reciever_visibility = models.BooleanField('Отображение у получателя', default=True)
 
     def __str__(self):
-        return str(self.sender)
+        return str(self.sender) + ' to ' + str(self.reciever)
 
     class Meta:
         verbose_name = 'Сообщение'

@@ -4,6 +4,7 @@
 {% block title %} {{user.first_name}} {{user.last_name}} {% endblock %}
 {% block style %}
 <link href="{% static 'css/account/account.css' %}" rel="stylesheet">
+<link href="{% static 'css/account/id.css' %}" rel="stylesheet">
 <link href="{% static 'css/posts/post_img.css' %}" rel="stylesheet">
 {% endblock %}
 
@@ -31,6 +32,18 @@
             <li><a href="{% url 'account:account_setting' %}">Настроить</a></li>
             <li><a href="#" id="modalwin">Создать пост</a></li>
           </ul>
+        </div>
+        <div class="category-wrap">
+          <h6>Подписчики</h6>
+          <div>
+            {% for follower in followers %}
+              <div class="friend_block">
+                <a href="{% url 'account:account' follower.user.id %}"><img src="{{ follower.user.profile.avatar.url }}" alt="{{ follower.user.username }}" class="rounded-circle w-100"></a>
+                  <h4 class="card-title wordwrap textowerflow"><a href="{% url 'account:account' follower.user.id %}">
+                  {{ follower.user.first_name }} {{ follower.user.last_name }}</a></h4>
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
 
@@ -82,15 +95,18 @@
               <img class="card-img-top" src="{{ post.post_image_url }}" alt="{{ post.post_title }}">
             {% endif %}
               <div class="card-body">
-              {% if post.post_title %}
-                <h4 class="card-title">{{ post.post_title }}</h4>
-              {% endif %}
-              <p class="card-text">
-                {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
-                <strong><time>{{ post.post_time }}</time></strong>
-              </p>
-              <p>
+                <div class="wordwrap textowerflow">
+                  {% if post.post_title %}
+                    <h4 class="card-title">{{ post.post_title }}</h4>
+                  {% endif %}
+                  <p class="card-text">
+                    {{ post.post_text|linebreaks|urlizetrunc:30|truncatewords_html:25 }}
 
+                  </p>
+                </div>
+                <strong><time>{{ post.post_time }}</time></strong>
+
+              <p>
                 {% if post.post_comments.count > 0 %}
                   <a href="{% url 'posts:post' post.id %}" id="comment{{ post.id }}"  class="btn btn-info float-left mr-2">
                     <img id="comment_img{{ post.id }}" src="{{ MEDIA_URL }}static/image/comment.png" alt="comment" width="23px">

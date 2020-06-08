@@ -107,7 +107,7 @@ def friend_news(request):
 
 @login_required(login_url = '/')
 def like_news(request):
-    like_posts = request.user.post_liked.all()
+    like_posts = request.user.post_liked.all().order_by("-post_time")
     page = request.GET.get('page', 1)
     paginator = Paginator(like_posts, 20)
     try:
