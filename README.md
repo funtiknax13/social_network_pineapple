@@ -1,4 +1,5 @@
 # Социальная сеть на Django
+[Социальная сеть "Ананас"](http://mypineapple.pythonanywhere.com)
 
 Для запуска:
 ```
